@@ -1,12 +1,16 @@
 {
   "name": "bmm",
   "version": "0.0.0",
+  "type": "module",
   "description": "",
   "scripts": {
     "lint": "biome check",
     "lint:fix": "biome check --fix",
     "dev:be": "cd backend && cargo watch -x run",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:migrate": "cd backend && cargo sqlx migrate run",
+    "db:seed": "cd backend && cargo xtask seed",
+    "db:reset": "cd backend && cargo xtask reset"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +18,7 @@
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
-    "@typescript/native-preview": "catalog:"
+    "@typescript/native-preview": "catalog:",
+    "dotenv-cli": "^9.0.0"
   }
 }

@@ -1,0 +1,12 @@
+[package]
+name = "xtask"
+version = "0.0.0"
+edition = "2024"
+
+[dependencies]
+backend = { path = "../" }
+thiserror.workspace = true
+tokio.workspace = true
+sqlx.workspace = true
+anyhow.workspace = true
+dotenvy.workspace = true

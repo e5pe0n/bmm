@@ -1,8 +1,31 @@
+[workspace]
+members = ["xtask"]
+
 [package]
 name = "backend"
 version = "0.0.0"
 edition = "2024"
 
-[dependencies]
+[workspace.dependencies]
 axum = "0.8.4"
-tokio = { version = "1.46.1", features = ["macros", "rt-multi-thread"] }
+serde = { version = "1.0.219", features = ["derive"] }
+thiserror = "2.0.12"
+tokio = { version = "1.46.1", features = ["full"] }
+sqlx = { version = "0.8", features = [
+    "runtime-tokio",
+    "postgres",
+    "uuid",
+    "time",
+] }
+anyhow = "1.0.98"
+dotenvy = "0.15.7"
+
+[dependencies]
+axum.workspace = true
+serde.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+sqlx.workspace = true
+anyhow.workspace = true
+dotenvy.workspace = true
+time = { version = "0.3.41", features = ["macros", "serde-well-known"] }
