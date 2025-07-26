@@ -1,0 +1,18 @@
+- bookmark manager
+  - bookmark
+    - multiple tags per link
+    - note
+    - name
+    - searchable by tag
+  - list all bookmarks
+    - sortable by name, creation time, last modified time, etc.
+  - ? group bookmarks
+
+- entities
+  - bookmark
+    - title
+    - link
+    - note
+    - tags
+  - tag
+    - name
