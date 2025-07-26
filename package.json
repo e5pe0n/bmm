@@ -5,6 +5,7 @@
   "scripts": {
     "lint": "biome check",
     "lint:fix": "biome check --fix",
+    "dev:be": "cd backend && cargo watch -x run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
