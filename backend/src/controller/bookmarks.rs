@@ -1,4 +1,5 @@
-use crate::{AppState, domain::bookmark::Bookmark};
+use crate::AppState;
+use crate::domain::bookmark::Bookmark;
 use axum::{Json, extract::State, http::StatusCode};
 use std::sync::Arc;
 use std::vec::Vec;
