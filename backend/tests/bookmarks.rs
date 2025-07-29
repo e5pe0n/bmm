@@ -1,0 +1,26 @@
+use axum::{body::Body, http::Request};
+use http_body_util::BodyExt;
+use serde_json::{Value, json};
+use sqlx::PgPool;
+use tower::ServiceExt;
+
+#[sqlx::test(fixtures("bookmarks"))]
+async fn test_list_bookmarks(db: PgPool) {
+    let app = backend::app(db);
+    let resp = app
+        .oneshot(Request::get("/").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+
+    assert_eq!(resp.status(), 200);
+    let body = resp.into_body().collect().await.unwrap().to_bytes();
+    let body: Value = serde_json::from_slice(&body).unwrap();
+    let body = body.as_array().unwrap();
+    assert_eq!(body.len(), 2);
+    assert_eq!(body[0]["id"], 1);
+    assert_eq!(body[0]["title"], "Example Bookmark");
+    assert_eq!(body[0]["url"], "https://example.com");
+    assert_eq!(body[1]["id"], 2);
+    assert_eq!(body[1]["title"], "Another Bookmark");
+    assert_eq!(body[1]["url"], "https://another-example.com");
+}
