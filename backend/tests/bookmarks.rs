@@ -24,3 +24,29 @@ async fn test_list_bookmarks(db: PgPool) {
     assert_eq!(body[1]["title"], "Another Bookmark");
     assert_eq!(body[1]["url"], "https://another-example.com");
 }
+
+#[sqlx::test()]
+async fn test_create_bookmark(db: PgPool) {
+    let app = backend::app(db);
+    let new_bookmark = json!({
+        "title": "New Bookmark",
+        "url": "https://new-bookmark.com"
+    });
+
+    let resp = app
+        .oneshot(
+            Request::post("/")
+                .header("Content-Type", "application/json")
+                .body(Body::from(new_bookmark.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(resp.status(), 201);
+    let body = resp.into_body().collect().await.unwrap().to_bytes();
+    let body: Value = serde_json::from_slice(&body).unwrap();
+
+    assert_eq!(body["title"], "New Bookmark");
+    assert_eq!(body["url"], "https://new-bookmark.com");
+}

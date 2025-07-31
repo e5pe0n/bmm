@@ -30,6 +30,7 @@ anyhow.workspace = true
 dotenvy.workspace = true
 time = { version = "0.3.41", features = ["macros", "serde-well-known"] }
 async-trait = "0.1.88"
+validator = { version = "0.20.0", features = ["derive"] }
 
 [dev-dependencies]
 tower = { version = "0.5.2", features = ["full"] }
