@@ -1,10 +1,10 @@
 use crate::AppState;
 use crate::domain::bookmark::{Bookmark, BookmarkId};
 use axum::{Json, extract::State, http::StatusCode};
+use garde::Validate;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::vec::Vec;
-use validator::{Validate, ValidationErrors};
 
 pub async fn list_bookmarks(
     State(state): State<Arc<AppState>>,
@@ -21,9 +21,9 @@ pub async fn list_bookmarks(
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct CreateBookmarkReq {
-    #[validate(length(min = 1, max = 255))]
+    #[garde(length(min = 1, max = 255))]
     title: String,
-    #[validate(url)]
+    #[garde(url)]
     url: String,
 }
 
@@ -48,11 +48,11 @@ pub async fn create_bookmark(
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct UpdateBookmarkReq {
-    #[validate(range(min = 1, max = 2147483647))]
+    #[garde(range(min = 1, max = 2147483647))]
     id: i32,
-    #[validate(length(min = 1, max = 255))]
+    #[garde(length(min = 1, max = 255))]
     title: String,
-    #[validate(url)]
+    #[garde(url)]
     url: String,
 }
 
