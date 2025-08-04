@@ -50,3 +50,30 @@ async fn test_create_bookmark(db: PgPool) {
     assert_eq!(body["title"], "New Bookmark");
     assert_eq!(body["url"], "https://new-bookmark.com");
 }
+
+#[sqlx::test(fixtures("bookmarks"))]
+async fn test_update_bookmark(db: PgPool) {
+    let app = backend::app(db);
+    let update_bookmark = json!({
+        "id": 1,
+        "title": "Updated Bookmark",
+        "url": "https://updated-bookmark.com"
+    });
+
+    let resp = app
+        .oneshot(
+            Request::put("/")
+                .header("Content-Type", "application/json")
+                .body(Body::from(update_bookmark.to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(resp.status(), 200);
+    let body = resp.into_body().collect().await.unwrap().to_bytes();
+    let body: Value = serde_json::from_slice(&body).unwrap();
+
+    assert_eq!(body["title"], "Updated Bookmark");
+    assert_eq!(body["url"], "https://updated-bookmark.com");
+}

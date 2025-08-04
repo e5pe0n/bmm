@@ -1,4 +1,4 @@
-use crate::controller::bookmarks::{create_bookmark, list_bookmarks};
+use crate::controller::bookmarks::{create_bookmark, list_bookmarks, update_bookmark};
 use axum::{Router, routing::get};
 use sqlx::PgPool;
 use std::sync::Arc;
@@ -18,6 +18,11 @@ pub fn app(db: PgPool) -> Router {
     });
 
     Router::new()
-        .route("/", get(list_bookmarks).post(create_bookmark))
+        .route(
+            "/",
+            get(list_bookmarks)
+                .post(create_bookmark)
+                .put(update_bookmark),
+        )
         .with_state(shared_state)
 }

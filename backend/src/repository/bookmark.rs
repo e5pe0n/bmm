@@ -12,6 +12,12 @@ pub trait BookmarkRepositoryTrait: Send + Sync {
     /// A vector of `Bookmark` instances.
     async fn get_bookmarks(&self) -> anyhow::Result<Vec<Bookmark>>;
     async fn create_bookmark(&self, title: &str, url: &str) -> anyhow::Result<Bookmark>;
+    async fn update_bookmark(
+        &self,
+        id: BookmarkId,
+        title: &str,
+        url: &str,
+    ) -> anyhow::Result<Bookmark>;
 }
 
 pub struct BookmarkRepository {
@@ -50,5 +56,23 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
         .fetch_one(&self.db)
         .await
         .context("failed to insert a new bookmark into the database.")
+    }
+
+    async fn update_bookmark(
+        &self,
+        id: BookmarkId,
+        title: &str,
+        url: &str,
+    ) -> anyhow::Result<Bookmark> {
+        sqlx::query_as!(
+            Bookmark,
+            r#"update bookmarks set title = $1, url = $2 where id = $3 returning id as "id: _", title, url, created_at, updated_at"#,
+            title,
+            url,
+            id.0
+        )
+        .fetch_one(&self.db)
+        .await
+        .context("failed to update the bookmark in the database.")
     }
 }

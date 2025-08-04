@@ -1,5 +1,5 @@
 use crate::AppState;
-use crate::domain::bookmark::Bookmark;
+use crate::domain::bookmark::{Bookmark, BookmarkId};
 use axum::{Json, extract::State, http::StatusCode};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -42,6 +42,35 @@ pub async fn create_bookmark(
 
     match res {
         Ok(bookmark) => Ok((StatusCode::CREATED, Json(bookmark))),
+        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+    }
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct UpdateBookmarkReq {
+    #[validate(range(min = 1, max = 2147483647))]
+    id: i32,
+    #[validate(length(min = 1, max = 255))]
+    title: String,
+    #[validate(url)]
+    url: String,
+}
+
+pub async fn update_bookmark(
+    State(state): State<Arc<AppState>>,
+    Json(req): Json<UpdateBookmarkReq>,
+) -> Result<(StatusCode, Json<Bookmark>), (StatusCode, String)> {
+    if let Err(e) = req.validate() {
+        return Err((StatusCode::BAD_REQUEST, e.to_string()));
+    }
+
+    let res = state
+        .bookmark_repository
+        .update_bookmark(BookmarkId(req.id), &req.title, &req.url)
+        .await;
+
+    match res {
+        Ok(bookmark) => Ok((StatusCode::OK, Json(bookmark))),
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
     }
 }
