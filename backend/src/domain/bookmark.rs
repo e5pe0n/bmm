@@ -7,6 +7,12 @@ use time::serde::rfc3339;
 #[sqlx(transparent)]
 pub struct BookmarkId(pub i32);
 
+impl From<i32> for BookmarkId {
+    fn from(value: i32) -> Self {
+        BookmarkId(value)
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct Bookmark {
     pub id: BookmarkId,

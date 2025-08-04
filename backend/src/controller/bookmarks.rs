@@ -1,20 +1,19 @@
 use crate::AppState;
 use crate::domain::bookmark::{Bookmark, BookmarkId};
+use crate::domain::common::MAX_ID;
 use axum::{Json, extract::State, http::StatusCode};
 use garde::Validate;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::sync::Arc;
 use std::vec::Vec;
 
-pub async fn list_bookmarks(
-    State(state): State<Arc<AppState>>,
-) -> Result<Json<Vec<Bookmark>>, (StatusCode, String)> {
-    // This function would typically interact with a database to retrieve bookmarks.
-    // For now, we return a dummy bookmark.
+type Return<T> = Result<(StatusCode, Json<T>), (StatusCode, String)>;
+
+pub async fn list_bookmarks(State(state): State<Arc<AppState>>) -> Return<Vec<Bookmark>> {
     let res = state.bookmark_repository.get_bookmarks().await;
 
     match res {
-        Ok(bookmarks) => Ok(Json(bookmarks)),
+        Ok(bookmarks) => Ok((StatusCode::OK, Json(bookmarks))),
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
     }
 }
@@ -30,7 +29,7 @@ pub struct CreateBookmarkReq {
 pub async fn create_bookmark(
     State(state): State<Arc<AppState>>,
     Json(req): Json<CreateBookmarkReq>,
-) -> Result<(StatusCode, Json<Bookmark>), (StatusCode, String)> {
+) -> Return<Bookmark> {
     if let Err(e) = req.validate() {
         return Err((StatusCode::BAD_REQUEST, e.to_string()));
     }
@@ -48,7 +47,7 @@ pub async fn create_bookmark(
 
 #[derive(Debug, Deserialize, Validate)]
 pub struct UpdateBookmarkReq {
-    #[garde(range(min = 1, max = 2147483647))]
+    #[garde(range(min = 1, max = MAX_ID))]
     id: i32,
     #[garde(length(min = 1, max = 255))]
     title: String,
@@ -59,7 +58,7 @@ pub struct UpdateBookmarkReq {
 pub async fn update_bookmark(
     State(state): State<Arc<AppState>>,
     Json(req): Json<UpdateBookmarkReq>,
-) -> Result<(StatusCode, Json<Bookmark>), (StatusCode, String)> {
+) -> Return<Bookmark> {
     if let Err(e) = req.validate() {
         return Err((StatusCode::BAD_REQUEST, e.to_string()));
     }
@@ -71,6 +70,28 @@ pub async fn update_bookmark(
 
     match res {
         Ok(bookmark) => Ok((StatusCode::OK, Json(bookmark))),
+        Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
+    }
+}
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct DeleteBookmarksReq {
+    #[garde(inner(range(min = 1, max = MAX_ID)))]
+    ids: Vec<i32>,
+}
+
+pub async fn delete_bookmarks(
+    State(state): State<Arc<AppState>>,
+    Json(ids): Json<Vec<BookmarkId>>,
+) -> Return<Vec<BookmarkId>> {
+    if ids.is_empty() {
+        return Ok((StatusCode::OK, Json(vec![])));
+    }
+
+    let res = state.bookmark_repository.delete_bookmarks(ids).await;
+
+    match res {
+        Ok(deleted_ids) => Ok((StatusCode::OK, Json(deleted_ids))),
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
     }
 }

@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use axum::{body::Body, http::Request};
 use http_body_util::BodyExt;
 use serde_json::{Value, json};
@@ -16,13 +18,16 @@ async fn test_list_bookmarks(db: PgPool) {
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let body: Value = serde_json::from_slice(&body).unwrap();
     let body = body.as_array().unwrap();
-    assert_eq!(body.len(), 2);
+    assert_eq!(body.len(), 3);
     assert_eq!(body[0]["id"], 1);
     assert_eq!(body[0]["title"], "Example Bookmark");
     assert_eq!(body[0]["url"], "https://example.com");
     assert_eq!(body[1]["id"], 2);
     assert_eq!(body[1]["title"], "Another Bookmark");
     assert_eq!(body[1]["url"], "https://another-example.com");
+    assert_eq!(body[2]["id"], 3);
+    assert_eq!(body[2]["title"], "Yet Another Bookmark");
+    assert_eq!(body[2]["url"], "https://yet-another-example.com");
 }
 
 #[sqlx::test()]
@@ -76,4 +81,43 @@ async fn test_update_bookmark(db: PgPool) {
 
     assert_eq!(body["title"], "Updated Bookmark");
     assert_eq!(body["url"], "https://updated-bookmark.com");
+}
+
+#[sqlx::test(fixtures("bookmarks"))]
+async fn test_delete_bookmarks(db: PgPool) {
+    let app = backend::app(db);
+    let delete_ids = vec![1, 2];
+
+    let resp = app
+        .clone()
+        .oneshot(
+            Request::delete("/")
+                .header("Content-Type", "application/json")
+                .body(Body::from(json!(delete_ids).to_string()))
+                .unwrap(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(resp.status(), 200);
+    let body = resp.into_body().collect().await.unwrap().to_bytes();
+    let body: Value = serde_json::from_slice(&body).unwrap();
+    let body = body.as_array().unwrap();
+    assert_eq!(body.len(), 2);
+
+    let expected_ids: HashSet<i64> = delete_ids.into_iter().collect();
+    assert!(expected_ids.contains(&body[0].as_i64().unwrap()));
+    assert!(expected_ids.contains(&body[1].as_i64().unwrap()));
+
+    // Verify that the bookmarks were deleted
+    let resp = app
+        .oneshot(Request::get("/").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+
+    assert_eq!(resp.status(), 200);
+    let body = resp.into_body().collect().await.unwrap().to_bytes();
+    let body: Value = serde_json::from_slice(&body).unwrap();
+    let body = body.as_array().unwrap();
+    assert_eq!(body.len(), 1);
 }

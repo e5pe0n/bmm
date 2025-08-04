@@ -1,15 +1,10 @@
 use crate::domain::bookmark::{Bookmark, BookmarkId};
 use anyhow::Context;
 use async_trait::async_trait;
-use sqlx::{FromRow, Pool, Postgres, postgres::PgRow};
-use time::OffsetDateTime;
+use sqlx::{Pool, Postgres};
 
 #[async_trait]
 pub trait BookmarkRepositoryTrait: Send + Sync {
-    /// Retrieves a list of bookmarks.
-    ///
-    /// # Returns
-    /// A vector of `Bookmark` instances.
     async fn get_bookmarks(&self) -> anyhow::Result<Vec<Bookmark>>;
     async fn create_bookmark(&self, title: &str, url: &str) -> anyhow::Result<Bookmark>;
     async fn update_bookmark(
@@ -18,6 +13,7 @@ pub trait BookmarkRepositoryTrait: Send + Sync {
         title: &str,
         url: &str,
     ) -> anyhow::Result<Bookmark>;
+    async fn delete_bookmarks(&self, ids: Vec<BookmarkId>) -> anyhow::Result<Vec<BookmarkId>>;
 }
 
 pub struct BookmarkRepository {
@@ -32,10 +28,6 @@ impl BookmarkRepository {
 
 #[async_trait]
 impl BookmarkRepositoryTrait for BookmarkRepository {
-    /// Retrieves a list of bookmarks.
-    ///
-    /// # Returns
-    /// A vector of `Bookmark` instances.
     async fn get_bookmarks(&self) -> anyhow::Result<Vec<Bookmark>> {
         sqlx::query_as!(
             Bookmark,
@@ -74,5 +66,17 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
         .fetch_one(&self.db)
         .await
         .context("failed to update the bookmark in the database.")
+    }
+
+    async fn delete_bookmarks(&self, ids: Vec<BookmarkId>) -> anyhow::Result<Vec<BookmarkId>> {
+        let records = sqlx::query!(
+            r#"delete from bookmarks where id = any($1) returning id as "id!: BookmarkId""#,
+            &ids.iter().map(|id| id.0).collect::<Vec<i32>>()
+        )
+        .fetch_all(&self.db)
+        .await
+        .context("failed to delete bookmarks from the database.")?;
+
+        Ok(records.into_iter().map(|record| record.id).collect())
     }
 }
