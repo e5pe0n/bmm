@@ -1,3 +1,9 @@
 {
-  "typescript.experimental.useTsgo": true
+  "typescript.experimental.useTsgo": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+  "editor.quickSuggestions": {
+    "strings": "on"
+  }
 }
