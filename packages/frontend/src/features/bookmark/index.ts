@@ -1,3 +1,4 @@
+import * as changeKeys from "change-case/keys";
 import { z } from "zod";
 import { config } from "../../config";
 
@@ -9,11 +10,11 @@ const bookmarkSchema = z.object({
   updatedAt: z.coerce.date(),
 });
 
-export type BookmarkIn = z.infer<typeof bookmarkSchema>;
+export type BookmarkIn = z.input<typeof bookmarkSchema>;
 export type Bookmark = z.infer<typeof bookmarkSchema>;
 
 export async function fetchBookmarks(): Promise<Bookmark[]> {
-  const res = await fetch(config.apiEndpoint, {
+  const res = await fetch(`${config.apiEndpoint}/bookmarks`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -29,12 +30,16 @@ export async function fetchBookmarks(): Promise<Bookmark[]> {
   }
 
   const jsonData = await res.json();
-  const valiRes = z.array(bookmarkSchema).safeParse(jsonData);
+  const camelCaseJsonData = changeKeys.camelCase(jsonData, 2);
+  const valiRes = z.array(bookmarkSchema).safeParse(camelCaseJsonData);
 
   if (!valiRes.success) {
-    throw new Error("failed to fetch bookmarks: invalid response", {
-      cause: valiRes.error,
-    });
+    throw new Error(
+      `failed to fetch bookmarks:\n${z.prettifyError(valiRes.error)}`,
+      {
+        cause: valiRes.error,
+      },
+    );
   }
 
   return valiRes.data;

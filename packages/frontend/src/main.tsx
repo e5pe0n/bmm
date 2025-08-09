@@ -18,7 +18,6 @@ async function enableMocking() {
 
 enableMocking()
   .then(() => {
-    console.log("MSW enabled");
     createRoot(document.getElementById("root")!).render(
       <StrictMode>
         <QueryClientProvider client={queryClient}>

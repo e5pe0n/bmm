@@ -8,6 +8,7 @@
     "lint:fix": "biome check --fix",
     "fmt": "cd backend && cargo fmt",
     "dev:be": "cd backend && cargo watch -x run",
+    "dev:fe": "cd packages/frontend && pnpm dev",
     "test:be": "cd backend && cargo test",
     "test": "pnpm test:be",
     "db:migrate": "cd backend && cargo sqlx migrate run",

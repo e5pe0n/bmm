@@ -19,6 +19,10 @@ sqlx = { version = "0.8", features = [
 ] }
 anyhow = "1.0.98"
 dotenvy = "0.15.7"
+time = { version = "0.3.41", features = ["macros", "serde-well-known"] }
+async-trait = "0.1.88"
+garde = { version = "0.22.0", features = ["full"] }
+tower-http = { version = "0.6.6", features = ["cors"] }
 
 [dependencies]
 axum.workspace = true
@@ -28,9 +32,11 @@ tokio.workspace = true
 sqlx.workspace = true
 anyhow.workspace = true
 dotenvy.workspace = true
-time = { version = "0.3.41", features = ["macros", "serde-well-known"] }
-async-trait = "0.1.88"
-garde = { version = "0.22.0", features = ["full"] }
+time.workspace = true
+async-trait.workspace = true
+garde.workspace = true
+tower-http.workspace = true
+
 
 [dev-dependencies]
 tower = { version = "0.5.2", features = ["full"] }
