@@ -6,8 +6,10 @@
   "scripts": {
     "lint": "biome check",
     "lint:fix": "biome check --fix",
+    "fmt": "cd backend && cargo fmt",
     "dev:be": "cd backend && cargo watch -x run",
     "test:be": "cd backend && cargo test",
+    "test": "pnpm test:be",
     "db:migrate": "cd backend && cargo sqlx migrate run",
     "db:seed": "cd backend && cargo xtask seed",
     "db:reset": "cd backend && cargo xtask reset"
