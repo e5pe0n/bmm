@@ -7,6 +7,10 @@
     "lint": "biome check",
     "lint:fix": "biome check --fix",
     "fmt": "cd backend && cargo fmt",
+    "pm": "pm2",
+    "dev": "pm2 start ecosystem.config.js",
+    "restart": "pm2 restart ecosystem.config.js",
+    "stop": "pm2 stop ecosystem.config.js",
     "dev:be": "cd backend && cargo watch -x run",
     "dev:fe": "cd packages/frontend && pnpm dev",
     "test:be": "cd backend && cargo test",
@@ -22,6 +26,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
     "@typescript/native-preview": "catalog:",
-    "dotenv-cli": "^9.0.0"
+    "dotenv-cli": "^9.0.0",
+    "pm2": "^6.0.8"
   }
 }
