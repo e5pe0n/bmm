@@ -1,6 +1,6 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import App from "./App.tsx";
 import "./index.css";
 import { config } from "./config.ts";
@@ -24,7 +24,7 @@ enableMocking()
         <QueryClientProvider client={queryClient}>
           <App />
         </QueryClientProvider>
-      </StrictMode>
+      </StrictMode>,
     );
   })
   .catch((error) => {

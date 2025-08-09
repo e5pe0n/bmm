@@ -1,4 +1,4 @@
-import { http, HttpResponse, type RequestHandler } from "msw";
+import { HttpResponse, http, type RequestHandler } from "msw";
 import { setupWorker } from "msw/browser";
 import { config } from "../config";
 import type { BookmarkIn } from "../features/bookmark";

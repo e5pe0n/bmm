@@ -1,4 +1,4 @@
-import type { Bookmark } from "../features/bookmark";
+import type { Bookmark } from ".";
 
 type Props = {
   bookmarks: Bookmark[];

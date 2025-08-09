@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { fetchBookmarks } from "../features/bookmark";
+import { fetchBookmarks } from ".";
 import BookmarkTable from "./BookmarkTable";
 
 export default function Bookmarks() {
