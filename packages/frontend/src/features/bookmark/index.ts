@@ -75,3 +75,29 @@ export async function deleteBookmarks(ids: Bookmark["id"][]): Promise<void> {
     throw new Error(`failed to delete bookmarks: ${res.statusText}`);
   }
 }
+
+export const addBookmarkSchema = z.object({
+  title: z.string().min(1),
+  url: z.url(),
+});
+
+type AddBookmarkIn = z.input<typeof addBookmarkSchema>;
+type AddBookmark = z.infer<typeof addBookmarkSchema>;
+
+export async function addBookmark(data: AddBookmark): Promise<void> {
+  const res = await fetch(`${config.apiEndpoint}/bookmarks`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).catch((error) => {
+    throw new Error("failed to add bookmark.", {
+      cause: error,
+    });
+  });
+
+  if (!res.ok) {
+    throw new Error(`failed to add bookmark: ${res.statusText}`);
+  }
+}

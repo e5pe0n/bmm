@@ -1,11 +1,8 @@
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { deleteBookmarks, fetchBookmarks, type Bookmark } from ".";
 import BookmarkTable from "./BookmarkTable";
 import { Controller, useForm } from "react-hook-form";
+import AddBookmarkModal from "./AddBookmarkModal";
 
 type FormValues = {
   selectedBookmarkIds: Bookmark["id"][];
@@ -46,31 +43,48 @@ export default function Bookmarks() {
   const selectedBookmarkIds = watch("selectedBookmarkIds");
 
   return (
-    <div>
-      {data && (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex justify-end">
-            <button
-              disabled={selectedBookmarkIds.length === 0}
-              type="submit"
-              className="btn btn-error"
-            >
-              Delete
-            </button>
-          </div>
-          <Controller
-            name="selectedBookmarkIds"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <BookmarkTable
-                bookmarks={data}
-                values={value}
-                onChange={onChange}
-              />
-            )}
-          />
-        </form>
-      )}
-    </div>
+    <>
+      <div>
+        {data && (
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex justify-end">
+              <div className="flex space-x-2">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    const modal = document.getElementById("add-bookmark-modal");
+                    if (modal instanceof HTMLDialogElement) {
+                      modal.showModal();
+                    }
+                  }}
+                >
+                  Add
+                </button>
+                <button
+                  disabled={selectedBookmarkIds.length === 0}
+                  type="submit"
+                  className="btn btn-error"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+            <Controller
+              name="selectedBookmarkIds"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <BookmarkTable
+                  bookmarks={data}
+                  values={value}
+                  onChange={onChange}
+                />
+              )}
+            />
+          </form>
+        )}
+      </div>
+      <AddBookmarkModal />
+    </>
   );
 }
