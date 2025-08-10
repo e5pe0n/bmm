@@ -1,10 +1,10 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { deleteBookmarks, fetchBookmarks, type Bookmark } from ".";
-import BookmarkTable from "./BookmarkTable";
-import { Controller, useForm } from "react-hook-form";
-import AddBookmarkModal from "./AddBookmarkModal";
-import EditBookmarkModal from "./EditBookmarkModal";
 import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { type Bookmark, deleteBookmarks, fetchBookmarks } from ".";
+import AddBookmarkModal from "./AddBookmarkModal";
+import BookmarkTable from "./BookmarkTable";
+import EditBookmarkModal from "./EditBookmarkModal";
 
 type FormValues = {
   selectedBookmarkIds: Bookmark["id"][];

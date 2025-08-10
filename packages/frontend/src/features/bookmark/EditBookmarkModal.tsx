@@ -1,9 +1,9 @@
-import { useForm } from "react-hook-form";
-import { editBookmark, editBookmarkSchema, type Bookmark } from ".";
 import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type z from "zod";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import type z from "zod";
+import { type Bookmark, editBookmark, editBookmarkSchema } from ".";
 
 const formSchema = editBookmarkSchema;
 

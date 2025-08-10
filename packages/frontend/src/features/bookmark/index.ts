@@ -81,7 +81,6 @@ export const addBookmarkSchema = z.object({
   url: z.url(),
 });
 
-type AddBookmarkIn = z.input<typeof addBookmarkSchema>;
 type AddBookmark = z.infer<typeof addBookmarkSchema>;
 
 export async function addBookmark(data: AddBookmark): Promise<void> {
@@ -108,7 +107,6 @@ export const editBookmarkSchema = z.object({
   url: z.url(),
 });
 
-type EditBookmarkIn = z.input<typeof editBookmarkSchema>;
 type EditBookmark = z.infer<typeof editBookmarkSchema>;
 
 export async function editBookmark(data: EditBookmark): Promise<void> {
