@@ -44,3 +44,34 @@ export async function fetchBookmarks(): Promise<Bookmark[]> {
 
   return valiRes.data;
 }
+
+const deleteIdsSchema = z.array(z.coerce.number());
+
+export async function deleteBookmarks(ids: Bookmark["id"][]): Promise<void> {
+  const valiRes = deleteIdsSchema.safeParse(ids);
+
+  if (!valiRes.success) {
+    throw new Error(
+      `failed to delete bookmarks:\n${z.prettifyError(valiRes.error)}`,
+      {
+        cause: valiRes.error,
+      },
+    );
+  }
+
+  const res = await fetch(`${config.apiEndpoint}/bookmarks`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(valiRes.data),
+  }).catch((error) => {
+    throw new Error("failed to delete bookmarks.", {
+      cause: error,
+    });
+  });
+
+  if (!res.ok) {
+    throw new Error(`failed to delete bookmarks: ${res.statusText}`);
+  }
+}

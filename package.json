@@ -8,6 +8,7 @@
     "lint:fix": "biome check --fix",
     "fmt": "cd backend && cargo fmt",
     "pm": "pm2",
+    "logs": "pm2 logs",
     "dev": "pm2 start ecosystem.config.js",
     "restart": "pm2 restart ecosystem.config.js",
     "stop": "pm2 stop ecosystem.config.js",
