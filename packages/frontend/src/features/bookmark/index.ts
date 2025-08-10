@@ -101,3 +101,30 @@ export async function addBookmark(data: AddBookmark): Promise<void> {
     throw new Error(`failed to add bookmark: ${res.statusText}`);
   }
 }
+
+export const editBookmarkSchema = z.object({
+  id: z.coerce.number(),
+  title: z.string().min(1),
+  url: z.url(),
+});
+
+type EditBookmarkIn = z.input<typeof editBookmarkSchema>;
+type EditBookmark = z.infer<typeof editBookmarkSchema>;
+
+export async function editBookmark(data: EditBookmark): Promise<void> {
+  const res = await fetch(`${config.apiEndpoint}/bookmarks`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).catch((error) => {
+    throw new Error("failed to edit bookmark.", {
+      cause: error,
+    });
+  });
+
+  if (!res.ok) {
+    throw new Error(`failed to edit bookmark: ${res.statusText}`);
+  }
+}

@@ -1,7 +1,10 @@
+import { GoPencil } from "react-icons/go";
 import type { Bookmark } from ".";
 
 type Props = {
-  bookmarks: Bookmark[];
+  bookmarks: (Bookmark & {
+    onClickMenu?: (() => void) | (() => Promise<void>);
+  })[];
   values: Bookmark["id"][];
   onChange: (selectedIds: Bookmark["id"][]) => void;
 };
@@ -14,6 +17,7 @@ export default function BookmarkTable({ bookmarks, values, onChange }: Props) {
           <th></th>
           <th>Title</th>
           <th>URL</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -40,6 +44,15 @@ export default function BookmarkTable({ bookmarks, values, onChange }: Props) {
               <a className="link" href={bookmark.url}>
                 {bookmark.url}
               </a>
+            </td>
+            <td>
+              <button
+                className="cursor-pointer"
+                type="button"
+                onClick={bookmark.onClickMenu}
+              >
+                <GoPencil />
+              </button>
             </td>
           </tr>
         ))}

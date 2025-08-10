@@ -3,6 +3,8 @@ import { deleteBookmarks, fetchBookmarks, type Bookmark } from ".";
 import BookmarkTable from "./BookmarkTable";
 import { Controller, useForm } from "react-hook-form";
 import AddBookmarkModal from "./AddBookmarkModal";
+import EditBookmarkModal from "./EditBookmarkModal";
+import { useState } from "react";
 
 type FormValues = {
   selectedBookmarkIds: Bookmark["id"][];
@@ -42,6 +44,8 @@ export default function Bookmarks() {
 
   const selectedBookmarkIds = watch("selectedBookmarkIds");
 
+  const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null);
+
   return (
     <>
       <div>
@@ -75,7 +79,20 @@ export default function Bookmarks() {
               control={control}
               render={({ field: { onChange, value } }) => (
                 <BookmarkTable
-                  bookmarks={data}
+                  bookmarks={data.map((v) => {
+                    return {
+                      ...v,
+                      onClickMenu: () => {
+                        setEditingBookmark(v);
+                        const modal = document.getElementById(
+                          "edit-bookmark-modal",
+                        );
+                        if (modal instanceof HTMLDialogElement) {
+                          modal.showModal();
+                        }
+                      },
+                    };
+                  })}
                   values={value}
                   onChange={onChange}
                 />
@@ -85,6 +102,7 @@ export default function Bookmarks() {
         )}
       </div>
       <AddBookmarkModal />
+      {editingBookmark && <EditBookmarkModal {...editingBookmark} />}
     </>
   );
 }
