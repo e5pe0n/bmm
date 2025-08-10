@@ -15,21 +15,9 @@ async fn main() -> anyhow::Result<()> {
 
     let task = env::args().nth(1);
     match task.as_deref() {
-        Some("reset") => {
-            println!("deleting data from tables...");
-            sqlx::query!(r#"delete from bookmarks cascade;"#)
-                .execute(&db)
-                .await
-                .context("failed to delete bookmarks table.")?;
-            println!("data deleted successfully.");
-        }
         Some("drop") => {
             println!("dropping tables...");
-            sqlx::query!(r#"drop table if exists bookmarks cascade;"#)
-                .execute(&db)
-                .await
-                .context("failed to drop bookmarks table.")?;
-            sqlx::query!(r#"drop table if exists _sqlx_migrations cascade;"#)
+            sqlx::query_file_unchecked!("../sqls/drop.sql")
                 .execute(&db)
                 .await
                 .context("failed to drop bookmarks table.")?;
@@ -37,16 +25,20 @@ async fn main() -> anyhow::Result<()> {
         }
         Some("seed") => {
             println!("Seeding database...");
-            sqlx::query!(
-                r#"
-insert into bookmarks (title, url) values
-('Example Bookmark', 'https://example.com'),
-('Another Bookmark', 'https://another-example.com')
-"#,
-            )
-            .execute(&db)
-            .await
-            .context("failed to seed bookmarks table.")?;
+            let mut trx = db.begin().await?;
+            sqlx::query_file_unchecked!("../sqls/seeds/bookmarks.sql")
+                .execute(&mut *trx)
+                .await
+                .context("failed to seed bookmarks table.")?;
+            sqlx::query_file_unchecked!("../sqls/seeds/tags.sql")
+                .execute(&mut *trx)
+                .await
+                .context("failed to seed bookmarks table.")?;
+            sqlx::query_file_unchecked!("../sqls/seeds/bookmarks__tags.sql")
+                .execute(&mut *trx)
+                .await
+                .context("failed to seed bookmarks table.")?;
+            trx.commit().await?;
             println!("tables seeded successfully.");
         }
         _ => {
