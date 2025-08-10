@@ -10,7 +10,7 @@ use tower::ServiceExt;
 async fn test_list_bookmarks(db: PgPool) {
     let app = backend::app(db);
     let resp = app
-        .oneshot(Request::get("/").body(Body::empty()).unwrap())
+        .oneshot(Request::get("/v1/bookmarks").body(Body::empty()).unwrap())
         .await
         .unwrap();
 
@@ -40,7 +40,7 @@ async fn test_create_bookmark(db: PgPool) {
 
     let resp = app
         .oneshot(
-            Request::post("/")
+            Request::post("/v1/bookmarks")
                 .header("Content-Type", "application/json")
                 .body(Body::from(new_bookmark.to_string()))
                 .unwrap(),
@@ -67,7 +67,7 @@ async fn test_update_bookmark(db: PgPool) {
 
     let resp = app
         .oneshot(
-            Request::put("/")
+            Request::put("/v1/bookmarks")
                 .header("Content-Type", "application/json")
                 .body(Body::from(update_bookmark.to_string()))
                 .unwrap(),
@@ -91,7 +91,7 @@ async fn test_delete_bookmarks(db: PgPool) {
     let resp = app
         .clone()
         .oneshot(
-            Request::delete("/")
+            Request::delete("/v1/bookmarks")
                 .header("Content-Type", "application/json")
                 .body(Body::from(json!(delete_ids).to_string()))
                 .unwrap(),
@@ -111,7 +111,7 @@ async fn test_delete_bookmarks(db: PgPool) {
 
     // Verify that the bookmarks were deleted
     let resp = app
-        .oneshot(Request::get("/").body(Body::empty()).unwrap())
+        .oneshot(Request::get("/v1/bookmarks").body(Body::empty()).unwrap())
         .await
         .unwrap();
 
