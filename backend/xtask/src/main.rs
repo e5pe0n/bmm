@@ -20,7 +20,7 @@ async fn main() -> anyhow::Result<()> {
             sqlx::query_file_unchecked!("../sqls/drop.sql")
                 .execute(&db)
                 .await
-                .context("failed to drop bookmarks table.")?;
+                .context("failed to drop tables.")?;
             println!("tables dropped successfully.");
         }
         Some("seed") => {

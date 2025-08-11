@@ -1,5 +1,6 @@
-use crate::controller::bookmarks::{
-    create_bookmark, delete_bookmarks, list_bookmarks, update_bookmark,
+use crate::controller::{
+    bookmarks::{create_bookmark, delete_bookmarks, list_bookmarks, update_bookmark},
+    tags::{create_tag, delete_tags, list_tags, update_tag},
 };
 use axum::{
     Router,
@@ -21,7 +22,8 @@ pub use app_state::AppState;
 
 pub fn app(db: PgPool) -> Router {
     let shared_state = Arc::new(AppState {
-        bookmark_repository: Box::new(repository::bookmark::BookmarkRepository::new(db)),
+        bookmark_repository: Box::new(repository::bookmark::BookmarkRepository::new(db.clone())),
+        tag_repository: Box::new(repository::tag::TagRepository::new(db.clone())),
     });
 
     Router::new()
@@ -31,6 +33,13 @@ pub fn app(db: PgPool) -> Router {
                 .post(create_bookmark)
                 .put(update_bookmark)
                 .delete(delete_bookmarks),
+        )
+        .route(
+            "/v1/tags",
+            get(list_tags)
+                .post(create_tag)
+                .put(update_tag)
+                .delete(delete_tags),
         )
         .with_state(shared_state)
         .layer(
