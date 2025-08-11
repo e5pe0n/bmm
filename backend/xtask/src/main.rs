@@ -25,20 +25,10 @@ async fn main() -> anyhow::Result<()> {
         }
         Some("seed") => {
             println!("Seeding database...");
-            let mut trx = db.begin().await?;
-            sqlx::query_file_unchecked!("../sqls/seeds/bookmarks.sql")
-                .execute(&mut *trx)
+            sqlx::query_file_unchecked!("../sqls/seed.sql")
+                .execute(&db)
                 .await
-                .context("failed to seed bookmarks table.")?;
-            sqlx::query_file_unchecked!("../sqls/seeds/tags.sql")
-                .execute(&mut *trx)
-                .await
-                .context("failed to seed bookmarks table.")?;
-            sqlx::query_file_unchecked!("../sqls/seeds/bookmarks__tags.sql")
-                .execute(&mut *trx)
-                .await
-                .context("failed to seed bookmarks table.")?;
-            trx.commit().await?;
+                .context("failed to seed table.")?;
             println!("tables seeded successfully.");
         }
         _ => {
