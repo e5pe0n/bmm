@@ -3,11 +3,24 @@ use crate::domain::bookmark::{Bookmark, BookmarkId};
 use crate::domain::common::MAX_ID;
 use axum::{Json, extract::State, http::StatusCode};
 use garde::Validate;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::vec::Vec;
 
 type Return<T> = Result<(StatusCode, Json<T>), (StatusCode, String)>;
+
+#[derive(Deserialize, Serialize)]
+pub struct SimpleSuccess {
+    message: String,
+}
+
+impl SimpleSuccess {
+    pub fn new() -> Self {
+        SimpleSuccess {
+            message: "success".to_string(),
+        }
+    }
+}
 
 pub async fn list_bookmarks(State(state): State<Arc<AppState>>) -> Return<Vec<Bookmark>> {
     let res = state.bookmark_repository.get_bookmarks().await;
@@ -29,18 +42,18 @@ pub struct CreateBookmarkReq {
 pub async fn create_bookmark(
     State(state): State<Arc<AppState>>,
     Json(req): Json<CreateBookmarkReq>,
-) -> Return<Bookmark> {
+) -> Return<SimpleSuccess> {
     if let Err(e) = req.validate() {
         return Err((StatusCode::BAD_REQUEST, e.to_string()));
     }
 
     let res = state
         .bookmark_repository
-        .create_bookmark(&req.title, &req.url)
+        .create_bookmark(&req.title, &req.url, &vec![])
         .await;
 
     match res {
-        Ok(bookmark) => Ok((StatusCode::CREATED, Json(bookmark))),
+        Ok(_) => Ok((StatusCode::CREATED, Json(SimpleSuccess::new()))),
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
     }
 }
@@ -58,18 +71,18 @@ pub struct UpdateBookmarkReq {
 pub async fn update_bookmark(
     State(state): State<Arc<AppState>>,
     Json(req): Json<UpdateBookmarkReq>,
-) -> Return<Bookmark> {
+) -> Return<SimpleSuccess> {
     if let Err(e) = req.validate() {
         return Err((StatusCode::BAD_REQUEST, e.to_string()));
     }
 
     let res = state
         .bookmark_repository
-        .update_bookmark(BookmarkId(req.id), &req.title, &req.url)
+        .update_bookmark(BookmarkId(req.id), &req.title, &req.url, &vec![])
         .await;
 
     match res {
-        Ok(bookmark) => Ok((StatusCode::OK, Json(bookmark))),
+        Ok(_) => Ok((StatusCode::OK, Json(SimpleSuccess::new()))),
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
     }
 }
@@ -83,15 +96,15 @@ pub struct DeleteBookmarksReq {
 pub async fn delete_bookmarks(
     State(state): State<Arc<AppState>>,
     Json(ids): Json<Vec<BookmarkId>>,
-) -> Return<Vec<BookmarkId>> {
+) -> Return<SimpleSuccess> {
     if ids.is_empty() {
-        return Ok((StatusCode::OK, Json(vec![])));
+        return Ok((StatusCode::OK, Json(SimpleSuccess::new())));
     }
 
-    let res = state.bookmark_repository.delete_bookmarks(ids).await;
+    let res = state.bookmark_repository.delete_bookmarks(&ids).await;
 
     match res {
-        Ok(deleted_ids) => Ok((StatusCode::OK, Json(deleted_ids))),
+        Ok(_) => Ok((StatusCode::OK, Json(SimpleSuccess::new()))),
         Err(e) => Err((StatusCode::INTERNAL_SERVER_ERROR, e.to_string())),
     }
 }

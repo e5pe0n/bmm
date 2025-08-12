@@ -23,6 +23,8 @@ time = { version = "0.3.41", features = ["macros", "serde-well-known"] }
 async-trait = "0.1.88"
 garde = { version = "0.22.0", features = ["full"] }
 tower-http = { version = "0.6.6", features = ["cors"] }
+serde_json = { version = "1.0.141" }
+regex = "1.11.1"
 
 [dependencies]
 axum.workspace = true
@@ -36,10 +38,10 @@ time.workspace = true
 async-trait.workspace = true
 garde.workspace = true
 tower-http.workspace = true
-regex = "1.11.1"
+serde_json.workspace = true
+regex.workspace = true
 
 
 [dev-dependencies]
 tower = { version = "0.5.2", features = ["full"] }
-serde_json = { version = "1.0.141" }
 http-body-util = "0.1.3"

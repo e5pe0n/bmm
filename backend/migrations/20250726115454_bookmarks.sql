@@ -14,10 +14,10 @@ create table bookmarks (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-create table bookmarks__tags (
-    id SERIAL PRIMARY KEY,
-    bookmark_id integer NOT NULL,
-    tag_id integer NOT NULL,
+create table bookmark_tags (
+    bookmark_id integer references bookmarks on delete cascade,
+    tag_id integer references tags on delete cascade,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    primary key (bookmark_id, tag_id)
 );

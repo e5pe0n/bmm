@@ -26,16 +26,24 @@ async fn test_list_bookmarks(db: PgPool) {
     assert_eq!(body[0]["url"], "https://example.com");
     let tags = body[0]["tags"].as_array().unwrap();
     assert_eq!(tags.len(), 2);
-    assert_eq!(tags[0], 1);
-    assert_eq!(tags[1], 2);
+    assert_eq!(tags[0]["id"], 1);
+    assert_eq!(tags[0]["name"], "Linux");
+    assert_eq!(tags[0]["color"], "#0000ff");
+    assert_eq!(tags[1]["id"], 2);
+    assert_eq!(tags[1]["name"], "Rust");
+    assert_eq!(tags[1]["color"], "#00ff00");
 
     assert_eq!(body[1]["id"], 2);
     assert_eq!(body[1]["title"], "Another Bookmark");
     assert_eq!(body[1]["url"], "https://another-example.com");
-    let tags = body[0]["tags"].as_array().unwrap();
+    let tags = body[1]["tags"].as_array().unwrap();
     assert_eq!(tags.len(), 2);
-    assert_eq!(tags[0], 1);
-    assert_eq!(tags[1], 3);
+    assert_eq!(tags[0]["id"], 1);
+    assert_eq!(tags[0]["name"], "Linux");
+    assert_eq!(tags[0]["color"], "#0000ff");
+    assert_eq!(tags[1]["id"], 3);
+    assert_eq!(tags[1]["name"], "TypeScript");
+    assert_eq!(tags[1]["color"], "#ff0000");
 
     assert_eq!(body[2]["id"], 3);
     assert_eq!(body[2]["title"], "Yet Another Bookmark");

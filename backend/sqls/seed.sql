@@ -8,10 +8,11 @@ with tags as (
 bookmarks as (
     insert into bookmarks (title, url) values
         ('Example Bookmark', 'https://example.com'),
-        ('Another Bookmark', 'https://another-example.com')
+        ('Another Bookmark', 'https://another-example.com'),
+        ('Yet Another Bookmark', 'https://yet-another-example.com')
     returning *
 )
-insert into bookmarks__tags (bookmark_id, tag_id) values
+insert into bookmark_tags (bookmark_id, tag_id) values
 (1, 1),
 (1, 2),
 (2, 1),
