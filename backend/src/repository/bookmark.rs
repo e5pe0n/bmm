@@ -1,5 +1,3 @@
-use std::collections::HashMap;
-
 use crate::domain::{
     bookmark::{Bookmark, BookmarkId},
     tag::{Color, Tag, TagId},
@@ -44,10 +42,12 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
             r#"
             select
                 bs.id as bs_id, title, url, bs.created_at as bs_created_at, bs.updated_at as bs_updated_at,
-                tags.id as tags_id, name, color, tags.created_at as tags_created_at, tags.updated_at as tags_updated_at
+                tags.id as "tags_id?", name as "name?", color as "color?", 
+                tags.created_at as "tags_created_at?", tags.updated_at as "tags_updated_at?"
             from bookmarks bs
-            inner join bookmark_tags bts on bs.id = bts.bookmark_id
-            inner join tags on bts.tag_id = tags.id
+            left join bookmark_tags bts on bs.id = bts.bookmark_id
+            left join tags on bts.tag_id = tags.id
+            order by bs.created_at desc
             "#
         )
         .fetch_all(&self.db)
@@ -56,23 +56,38 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
 
         let mut v = Vec::<Bookmark>::new();
         for r in rs.iter() {
-            let tag = Tag {
-                id: TagId(r.tags_id.clone()),
-                name: r.name.clone(),
-                color: Color(r.color.clone()),
-                created_at: r.tags_created_at.clone(),
-                updated_at: r.tags_updated_at.clone(),
-            };
             match v.last_mut() {
                 Some(last) if last.id.0 == r.bs_id => {
-                    last.tags.push(tag);
+                    // Only add tag if it exists (tags_id is Some)
+                    if let Some(tag_id) = r.tags_id {
+                        let tag = Tag {
+                            id: TagId(tag_id),
+                            name: r.name.clone().unwrap(),
+                            color: Color(r.color.clone().unwrap()),
+                            created_at: r.tags_created_at.unwrap(),
+                            updated_at: r.tags_updated_at.unwrap(),
+                        };
+                        last.tags.push(tag);
+                    }
                 }
                 _ => {
+                    let mut tags = Vec::new();
+                    // Only add tag if it exists (tags_id is Some)
+                    if let Some(tag_id) = r.tags_id {
+                        let tag = Tag {
+                            id: TagId(tag_id),
+                            name: r.name.clone().unwrap(),
+                            color: Color(r.color.clone().unwrap()),
+                            created_at: r.tags_created_at.unwrap(),
+                            updated_at: r.tags_updated_at.unwrap(),
+                        };
+                        tags.push(tag);
+                    }
                     v.push(Bookmark {
                         id: BookmarkId(r.bs_id.clone()),
                         title: r.title.clone(),
                         url: r.url.clone(),
-                        tags: vec![tag],
+                        tags,
                         created_at: r.bs_created_at.clone(),
                         updated_at: r.bs_updated_at.clone(),
                     });
@@ -101,7 +116,7 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
         .context("failed to insert a new bookmark into the database.")?;
         let mut qb: QueryBuilder<Postgres> = QueryBuilder::new(
             r#"
-            insert into bookmarks__tags (bookmark_id, tag_id)
+            insert into bookmark_tags (bookmark_id, tag_id)
             "#,
         );
         qb.push_values(tag_ids.iter(), |mut b, tag_id| {
