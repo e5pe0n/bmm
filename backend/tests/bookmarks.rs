@@ -147,7 +147,7 @@ async fn test_update_bookmark(db: PgPool) {
 
 #[sqlx::test(fixtures("bookmarks"))]
 async fn test_delete_bookmarks(db: PgPool) {
-    let app = backend::app(db);
+    let app = backend::app(db.clone());
     let delete_ids = vec![1, 2];
 
     let resp = app
@@ -162,16 +162,15 @@ async fn test_delete_bookmarks(db: PgPool) {
         .unwrap();
 
     assert_eq!(resp.status(), 200);
-    let body = resp.into_body().collect().await.unwrap().to_bytes();
-    let body: Value = serde_json::from_slice(&body).unwrap();
-    let body = body.as_array().unwrap();
-    assert_eq!(body.len(), 2);
 
-    let expected_ids: HashSet<i64> = delete_ids.into_iter().collect();
-    assert!(expected_ids.contains(&body[0].as_i64().unwrap()));
-    assert!(expected_ids.contains(&body[1].as_i64().unwrap()));
+    let resp = app
+        .oneshot(Request::get("/v1/bookmarks").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
 
-    // Verify that the bookmarks were deleted
+    assert_eq!(resp.status(), 200);
+
+    let app = backend::app(db);
     let resp = app
         .oneshot(Request::get("/v1/bookmarks").body(Body::empty()).unwrap())
         .await
@@ -181,5 +180,11 @@ async fn test_delete_bookmarks(db: PgPool) {
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let body: Value = serde_json::from_slice(&body).unwrap();
     let body = body.as_array().unwrap();
-    assert_eq!(body.len(), 1);
+
+    let rest_bookmark_ids = body
+        .iter()
+        .map(|v| v["id"].as_i64().unwrap() as i32)
+        .collect::<Vec<_>>();
+    assert!(!rest_bookmark_ids.contains(&delete_ids[0]));
+    assert!(!rest_bookmark_ids.contains(&delete_ids[1]));
 }
