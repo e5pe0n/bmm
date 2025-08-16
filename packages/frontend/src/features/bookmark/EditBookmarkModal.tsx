@@ -20,6 +20,7 @@ export default function EditBookmarkModal(props: Props) {
   } = useForm({
     values: {
       ...props,
+      tagIds: [],
     },
     resolver: zodResolver(formSchema),
   });

@@ -1,13 +1,15 @@
 import * as changeKeys from "change-case/keys";
 import { z } from "zod";
 import { config } from "../../config";
+import { tagIdSchema, tagSchema } from "../tag";
 
 const bookmarkIdSchema = z.number().brand<"BookmarkId">();
 
 const bookmarkSchema = z.object({
   id: bookmarkIdSchema,
-  title: z.string(),
+  title: z.string().min(1),
   url: z.url(),
+  tags: z.array(tagSchema),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
@@ -32,7 +34,7 @@ export async function fetchBookmarks(): Promise<Bookmark[]> {
   }
 
   const jsonData = await res.json();
-  const camelCaseJsonData = changeKeys.camelCase(jsonData, 2);
+  const camelCaseJsonData = changeKeys.camelCase(jsonData, 4);
   const valiRes = z.array(bookmarkSchema).safeParse(camelCaseJsonData);
 
   if (!valiRes.success) {
@@ -81,17 +83,19 @@ export async function deleteBookmarks(ids: Bookmark["id"][]): Promise<void> {
 export const addBookmarkSchema = z.object({
   title: z.string().min(1),
   url: z.url(),
+  tagIds: z.array(tagIdSchema),
 });
 
 type AddBookmark = z.infer<typeof addBookmarkSchema>;
 
 export async function addBookmark(data: AddBookmark): Promise<void> {
+  const snakeCaseData = changeKeys.snakeCase(data, 4);
   const res = await fetch(`${config.apiEndpoint}/bookmarks`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(snakeCaseData),
   }).catch((error) => {
     throw new Error("failed to add bookmark.", {
       cause: error,
@@ -107,17 +111,19 @@ export const editBookmarkSchema = z.object({
   id: bookmarkIdSchema,
   title: z.string().min(1),
   url: z.url(),
+  tagIds: z.array(tagIdSchema),
 });
 
 type EditBookmark = z.infer<typeof editBookmarkSchema>;
 
 export async function editBookmark(data: EditBookmark): Promise<void> {
+  const snakeCaseData = changeKeys.snakeCase(data, 4);
   const res = await fetch(`${config.apiEndpoint}/bookmarks`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(snakeCaseData),
   }).catch((error) => {
     throw new Error("failed to edit bookmark.", {
       cause: error,

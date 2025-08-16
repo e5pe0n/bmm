@@ -19,6 +19,7 @@ export default function AddBookmarkModal() {
     defaultValues: {
       title: "",
       url: "",
+      tagIds: [],
     },
     resolver: zodResolver(formSchema),
   });
