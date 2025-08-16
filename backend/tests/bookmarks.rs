@@ -58,7 +58,7 @@ async fn test_create_bookmark(db: PgPool) {
     let new_bookmark = json!({
         "title": "Example Bookmark",
         "url": "https://example.com",
-        "tag_ids": [1, 2]
+        "tag_ids": ["1", "2"]
     });
 
     let resp = app
