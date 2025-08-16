@@ -1,7 +1,11 @@
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { type Bookmark, deleteBookmarks, fetchBookmarks } from ".";
+import {
+  type Bookmark,
+  deleteBookmarks,
+  fetchBookmarks,
+} from "../../features/bookmark";
 import AddBookmarkModal from "./AddBookmarkModal";
 import BookmarkTable from "./BookmarkTable";
 import EditBookmarkModal from "./EditBookmarkModal";
@@ -82,7 +86,7 @@ export default function Bookmarks() {
                   bookmarks={data.map((v) => {
                     return {
                       ...v,
-                      onClickMenu: () => {
+                      onClickEdit: () => {
                         setEditingBookmark(v);
                         const modal = document.getElementById(
                           "edit-bookmark-modal",

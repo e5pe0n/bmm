@@ -1,9 +1,10 @@
+import chroma from "chroma-js";
 import { GoPencil } from "react-icons/go";
-import type { Bookmark } from ".";
+import type { Bookmark } from "../../features/bookmark";
 
 type Props = {
   bookmarks: (Bookmark & {
-    onClickMenu?: (() => void) | (() => Promise<void>);
+    onClickEdit?: (() => void) | (() => Promise<void>);
   })[];
   values: Bookmark["id"][];
   onChange: (selectedIds: Bookmark["id"][]) => void;
@@ -17,6 +18,7 @@ export default function BookmarkTable({ bookmarks, values, onChange }: Props) {
           <th></th>
           <th>Title</th>
           <th>URL</th>
+          <th>Tags</th>
           <th></th>
         </tr>
       </thead>
@@ -45,11 +47,31 @@ export default function BookmarkTable({ bookmarks, values, onChange }: Props) {
                 {bookmark.url}
               </a>
             </td>
+            <td className="flex gap-1">
+              {bookmark.tags.map((tag) => {
+                return (
+                  <div
+                    key={tag.id}
+                    className="badge"
+                    style={{
+                      backgroundColor: tag.color,
+                      color:
+                        // https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Understanding_WCAG/Perceivable/Color_contrast
+                        chroma.contrast(tag.color, "white") > 4.5
+                          ? "white"
+                          : "black",
+                    }}
+                  >
+                    {tag.name}
+                  </div>
+                );
+              })}
+            </td>
             <td>
               <button
                 className="cursor-pointer"
                 type="button"
-                onClick={bookmark.onClickMenu}
+                onClick={bookmark.onClickEdit}
               >
                 <GoPencil />
               </button>

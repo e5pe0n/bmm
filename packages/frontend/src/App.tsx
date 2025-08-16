@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import bmmLogo from "/succulents-svgrepo-com.svg";
-import Bookmarks from "./features/bookmark/Bookmarks";
+import Bookmarks from "./routes/-components/Bookmarks";
 
 function App() {
   return (

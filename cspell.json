@@ -2,5 +2,14 @@
   "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
   "version": "0.2",
   "ignorePaths": ["node_modules", "dist", "target", "cspell.json"],
-  "words": ["sqlx", "oneshot", "dotenvy", "dotenv", "sqls", "vali", "xtask"]
+  "words": [
+    "sqlx",
+    "oneshot",
+    "dotenvy",
+    "dotenv",
+    "sqls",
+    "vali",
+    "xtask",
+    "svgrepo"
+  ]
 }
