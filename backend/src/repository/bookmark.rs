@@ -117,7 +117,7 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
         if tag_ids.len() > 0 {
             let mut qb: QueryBuilder<Postgres> = QueryBuilder::new(
                 r#"
-            insert into bookmark_tags (bookmark_id, tag_id)
+                insert into bookmark_tags (bookmark_id, tag_id)
             "#,
             );
             qb.push_values(tag_ids.iter(), |mut b, tag_id| {
@@ -138,7 +138,7 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
         url: &str,
         tag_ids: &Vec<TagId>,
     ) -> anyhow::Result<()> {
-        sqlx::query!(
+        let r = sqlx::query!(
             r#"
             update bookmarks set title = $1, url = $2 where id = $3
             returning id, title, url, created_at, updated_at
@@ -150,6 +150,31 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
         .fetch_one(&self.db)
         .await
         .context("failed to update the bookmark in the database.")?;
+
+        sqlx::query!(
+            r#"
+            delete from bookmark_tags where bookmark_id = $1
+            "#,
+            id.0,
+        )
+        .execute(&self.db)
+        .await
+        .context("failed to delete bookmark tags from the database.")?;
+
+        if tag_ids.len() > 0 {
+            let mut qb: QueryBuilder<Postgres> = QueryBuilder::new(
+                r#"
+            insert into bookmark_tags (bookmark_id, tag_id)
+            "#,
+            );
+            qb.push_values(tag_ids.iter(), |mut b, tag_id| {
+                b.push_bind(r.id).push_bind(tag_id);
+            });
+            qb.build()
+                .execute(&self.db)
+                .await
+                .context("failed to insert a new bookmark tags into the database.")?;
+        }
 
         Ok(())
     }

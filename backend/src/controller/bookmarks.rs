@@ -38,7 +38,7 @@ pub struct CreateBookmarkReq {
     title: String,
     #[garde(url)]
     url: String,
-    #[garde(length(max = 20), inner(range(min = 1, max = MAX_ID)))]
+    #[garde(length(max = 50), inner(range(min = 1, max = MAX_ID)))]
     tag_ids: Vec<i32>,
 }
 
@@ -73,6 +73,8 @@ pub struct UpdateBookmarkReq {
     title: String,
     #[garde(url)]
     url: String,
+    #[garde(length(max = 50), inner(range(min = 1, max = MAX_ID)))]
+    tag_ids: Vec<i32>,
 }
 
 pub async fn update_bookmark(
@@ -85,7 +87,12 @@ pub async fn update_bookmark(
 
     let res = state
         .bookmark_repository
-        .update_bookmark(BookmarkId(req.id), &req.title, &req.url, &vec![])
+        .update_bookmark(
+            BookmarkId(req.id),
+            &req.title,
+            &req.url,
+            &req.tag_ids.iter().map(|tag_id| TagId(*tag_id)).collect(),
+        )
         .await;
 
     match res {

@@ -58,7 +58,7 @@ async fn test_create_bookmark(db: PgPool) {
     let new_bookmark = json!({
         "title": "Example Bookmark",
         "url": "https://example.com",
-        "tag_ids": ["1", "2"]
+        "tag_ids": [1, 2]
     });
 
     let resp = app
@@ -101,11 +101,12 @@ async fn test_create_bookmark(db: PgPool) {
 
 #[sqlx::test(fixtures("bookmarks"))]
 async fn test_update_bookmark(db: PgPool) {
-    let app = backend::app(db);
+    let app = backend::app(db.clone());
     let update_bookmark = json!({
-        "id": 1,
+        "id": 2,
         "title": "Updated Bookmark",
-        "url": "https://updated-bookmark.com"
+        "url": "https://updated-bookmark.com",
+        "tag_ids": [1, 2]
     });
 
     let resp = app
@@ -119,11 +120,29 @@ async fn test_update_bookmark(db: PgPool) {
         .unwrap();
 
     assert_eq!(resp.status(), 200);
+
+    let app = backend::app(db);
+    let resp = app
+        .oneshot(Request::get("/v1/bookmarks").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+
+    assert_eq!(resp.status(), 200);
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let body: Value = serde_json::from_slice(&body).unwrap();
+    let body = body.as_array().unwrap();
 
-    assert_eq!(body["title"], "Updated Bookmark");
-    assert_eq!(body["url"], "https://updated-bookmark.com");
+    let updated_bookmark = body.iter().find(|v| v["id"] == 2).unwrap();
+    assert_eq!(updated_bookmark["title"], "Updated Bookmark");
+    assert_eq!(updated_bookmark["url"], "https://updated-bookmark.com");
+    let tags = updated_bookmark["tags"].as_array().unwrap();
+    assert_eq!(tags.len(), 2);
+    assert_eq!(tags[0]["id"], 1);
+    assert_eq!(tags[0]["name"], "Linux");
+    assert_eq!(tags[0]["color"], "#0000ff");
+    assert_eq!(tags[1]["id"], 2);
+    assert_eq!(tags[1]["name"], "Rust");
+    assert_eq!(tags[1]["color"], "#00ff00");
 }
 
 #[sqlx::test(fixtures("bookmarks"))]

@@ -2,8 +2,10 @@ import * as changeKeys from "change-case/keys";
 import { z } from "zod";
 import { config } from "../../config";
 
+const bookmarkIdSchema = z.number().brand<"BookmarkId">();
+
 const bookmarkSchema = z.object({
-  id: z.coerce.string(),
+  id: bookmarkIdSchema,
   title: z.string(),
   url: z.url(),
   createdAt: z.coerce.date(),
@@ -102,7 +104,7 @@ export async function addBookmark(data: AddBookmark): Promise<void> {
 }
 
 export const editBookmarkSchema = z.object({
-  id: z.coerce.number(),
+  id: bookmarkIdSchema,
   title: z.string().min(1),
   url: z.url(),
 });
