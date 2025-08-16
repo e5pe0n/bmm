@@ -42,7 +42,7 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
             r#"
             select
                 bs.id as bs_id, title, url, bs.created_at as bs_created_at, bs.updated_at as bs_updated_at,
-                tags.id as "tags_id?", name as "name?", color as "color?", 
+                tags.id as "tags_id?", name as "name?", color as "color?",
                 tags.created_at as "tags_created_at?", tags.updated_at as "tags_updated_at?"
             from bookmarks bs
             left join bookmark_tags bts on bs.id = bts.bookmark_id
@@ -114,18 +114,20 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
         .fetch_one(&self.db)
         .await
         .context("failed to insert a new bookmark into the database.")?;
-        let mut qb: QueryBuilder<Postgres> = QueryBuilder::new(
-            r#"
+        if tag_ids.len() > 0 {
+            let mut qb: QueryBuilder<Postgres> = QueryBuilder::new(
+                r#"
             insert into bookmark_tags (bookmark_id, tag_id)
             "#,
-        );
-        qb.push_values(tag_ids.iter(), |mut b, tag_id| {
-            b.push_bind(r.id).push_bind(tag_id);
-        });
-        qb.build()
-            .execute(&self.db)
-            .await
-            .context("failed to insert a new bookmark tags into the database.")?;
+            );
+            qb.push_values(tag_ids.iter(), |mut b, tag_id| {
+                b.push_bind(r.id).push_bind(tag_id);
+            });
+            qb.build()
+                .execute(&self.db)
+                .await
+                .context("failed to insert a new bookmark tags into the database.")?;
+        }
         Ok(())
     }
 

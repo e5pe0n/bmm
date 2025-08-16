@@ -1,6 +1,7 @@
 use crate::AppState;
 use crate::domain::bookmark::{Bookmark, BookmarkId};
 use crate::domain::common::MAX_ID;
+use crate::domain::tag::TagId;
 use axum::{Json, extract::State, http::StatusCode};
 use garde::Validate;
 use serde::{Deserialize, Serialize};
@@ -37,6 +38,8 @@ pub struct CreateBookmarkReq {
     title: String,
     #[garde(url)]
     url: String,
+    #[garde(length(max = 20), inner(range(min = 1, max = MAX_ID)))]
+    tag_ids: Vec<i32>,
 }
 
 pub async fn create_bookmark(
@@ -49,7 +52,11 @@ pub async fn create_bookmark(
 
     let res = state
         .bookmark_repository
-        .create_bookmark(&req.title, &req.url, &vec![])
+        .create_bookmark(
+            &req.title,
+            &req.url,
+            &req.tag_ids.iter().map(|tag_id| TagId(*tag_id)).collect(),
+        )
         .await;
 
     match res {

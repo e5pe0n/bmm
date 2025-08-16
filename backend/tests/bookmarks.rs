@@ -48,16 +48,17 @@ async fn test_list_bookmarks(db: PgPool) {
     assert_eq!(body[2]["id"], 3);
     assert_eq!(body[2]["title"], "Yet Another Bookmark");
     assert_eq!(body[2]["url"], "https://yet-another-example.com");
-    let tags = body[0]["tags"].as_array().unwrap();
+    let tags = body[2]["tags"].as_array().unwrap();
     assert_eq!(tags.len(), 0);
 }
 
-#[sqlx::test()]
+#[sqlx::test(fixtures("tags"))]
 async fn test_create_bookmark(db: PgPool) {
-    let app = backend::app(db);
+    let app = backend::app(db.clone());
     let new_bookmark = json!({
-        "title": "New Bookmark",
-        "url": "https://new-bookmark.com"
+        "title": "Example Bookmark",
+        "url": "https://example.com",
+        "tag_ids": [1, 2]
     });
 
     let resp = app
@@ -71,11 +72,31 @@ async fn test_create_bookmark(db: PgPool) {
         .unwrap();
 
     assert_eq!(resp.status(), 201);
+
+    let app = backend::app(db);
+    let resp = app
+        .oneshot(Request::get("/v1/bookmarks").body(Body::empty()).unwrap())
+        .await
+        .unwrap();
+
+    assert_eq!(resp.status(), 200);
     let body = resp.into_body().collect().await.unwrap().to_bytes();
     let body: Value = serde_json::from_slice(&body).unwrap();
+    let body = body.as_array().unwrap();
 
-    assert_eq!(body["title"], "New Bookmark");
-    assert_eq!(body["url"], "https://new-bookmark.com");
+    assert_eq!(body.len(), 1);
+
+    assert_eq!(body[0]["id"], 1);
+    assert_eq!(body[0]["title"], "Example Bookmark");
+    assert_eq!(body[0]["url"], "https://example.com");
+    let tags = body[0]["tags"].as_array().unwrap();
+    assert_eq!(tags.len(), 2);
+    assert_eq!(tags[0]["id"], 1);
+    assert_eq!(tags[0]["name"], "Linux");
+    assert_eq!(tags[0]["color"], "#0000ff");
+    assert_eq!(tags[1]["id"], 2);
+    assert_eq!(tags[1]["name"], "Rust");
+    assert_eq!(tags[1]["color"], "#00ff00");
 }
 
 #[sqlx::test(fixtures("bookmarks"))]
