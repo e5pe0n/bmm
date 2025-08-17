@@ -47,7 +47,7 @@ impl BookmarkRepositoryTrait for BookmarkRepository {
             from bookmarks bs
             left join bookmark_tags bts on bs.id = bts.bookmark_id
             left join tags on bts.tag_id = tags.id
-            order by bs.created_at desc
+            order by bs.id, tags.id
             "#
         )
         .fetch_all(&self.db)

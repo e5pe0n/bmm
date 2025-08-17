@@ -24,7 +24,7 @@ export default function BookmarkTable({ bookmarks, values, onChange }: Props) {
       </thead>
       <tbody>
         {bookmarks.map((bookmark) => (
-          <tr key={bookmark.id}>
+          <tr key={`bookmark-${bookmark.id}`}>
             <td>
               <input
                 type="checkbox"
@@ -51,7 +51,7 @@ export default function BookmarkTable({ bookmarks, values, onChange }: Props) {
               {bookmark.tags.map((tag) => {
                 return (
                   <div
-                    key={tag.id}
+                    key={`bookmark-${bookmark.id}-tag-${tag.id}`}
                     className="badge"
                     style={{
                       backgroundColor: tag.color,

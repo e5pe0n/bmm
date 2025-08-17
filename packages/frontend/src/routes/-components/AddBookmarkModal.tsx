@@ -1,9 +1,11 @@
 import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import Select from "react-select";
 import type z from "zod";
 import { addBookmark, addBookmarkSchema } from "../../features/bookmark";
+import type { Tag } from "../../features/tag";
 
 const formSchema = addBookmarkSchema;
 
@@ -15,10 +17,23 @@ const defaultValues: FormValues = {
   tagIds: [],
 } as const;
 
-export default function AddBookmarkModal() {
+type Props = {
+  tags: Tag[];
+};
+
+export default function AddBookmarkModal({ tags }: Props) {
+  const options = tags.map((tag) => {
+    return {
+      value: tag.id,
+      label: tag.name,
+      color: tag.color,
+    };
+  });
+
   const {
     handleSubmit,
     register,
+    control,
     formState: { errors },
     reset,
   } = useForm({
@@ -30,7 +45,6 @@ export default function AddBookmarkModal() {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      // Call the API to add the bookmark
       await addBookmark(data);
       const modal = document.getElementById("add-bookmark-modal");
       if (modal instanceof HTMLDialogElement) {
@@ -98,7 +112,37 @@ export default function AddBookmarkModal() {
               }}
             />
           </fieldset>
-          <div className="flex justify-end">
+          <fieldset className="fieldset">
+            <label htmlFor="select-tags" className="label">
+              Tags
+            </label>
+            <Controller
+              control={control}
+              name="tagIds"
+              render={({ field }) => {
+                return (
+                  <Select
+                    id="select-tags"
+                    options={options}
+                    isMulti
+                    value={
+                      field.value && field.value.length > 0
+                        ? options.filter((option) =>
+                            field.value.includes(option.value),
+                          )
+                        : []
+                    }
+                    onChange={(newValue) => {
+                      field.onChange(
+                        newValue ? newValue.map((v) => v.value) : [],
+                      );
+                    }}
+                  />
+                );
+              }}
+            />
+          </fieldset>
+          <div className="flex justify-end pt-12">
             <button type="submit" className="btn btn-primary">
               Add
             </button>

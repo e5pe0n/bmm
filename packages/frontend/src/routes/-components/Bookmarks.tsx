@@ -1,4 +1,8 @@
-import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -6,6 +10,7 @@ import {
   deleteBookmarks,
   fetchBookmarks,
 } from "../../features/bookmark";
+import { fetchTags } from "../../features/tag";
 import AddBookmarkModal from "./AddBookmarkModal";
 import BookmarkTable from "./BookmarkTable";
 import EditBookmarkModal from "./EditBookmarkModal";
@@ -25,6 +30,11 @@ export default function Bookmarks() {
       cause: error,
     });
   }
+
+  const query = useQuery({
+    queryKey: ["tags"],
+    queryFn: fetchTags,
+  });
 
   const { handleSubmit, control, watch, reset } = useForm<FormValues>({
     defaultValues: {
@@ -105,8 +115,10 @@ export default function Bookmarks() {
           </form>
         )}
       </div>
-      <AddBookmarkModal />
-      {editingBookmark && <EditBookmarkModal {...editingBookmark} />}
+      {query.data && <AddBookmarkModal tags={query.data} />}
+      {query.data && editingBookmark && (
+        <EditBookmarkModal bookmark={editingBookmark} tags={query.data} />
+      )}
     </>
   );
 }

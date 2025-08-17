@@ -1,30 +1,44 @@
 import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import Select from "react-select";
 import type z from "zod";
 import {
   type Bookmark,
   editBookmark,
   editBookmarkSchema,
 } from "../../features/bookmark";
+import type { Tag } from "../../features/tag";
 
 const formSchema = editBookmarkSchema;
 
 type FormValues = z.infer<typeof formSchema>;
 
-type Props = Pick<Bookmark, "id" | "title" | "url">;
+type Props = {
+  bookmark: Pick<Bookmark, "id" | "title" | "url" | "tags">;
+  tags: Tag[];
+};
 
-export default function EditBookmarkModal(props: Props) {
+export default function EditBookmarkModal({ bookmark, tags }: Props) {
+  const options = tags.map((tag) => {
+    return {
+      value: tag.id,
+      label: tag.name,
+      color: tag.color,
+    };
+  });
+
   const {
     handleSubmit,
     register,
+    control,
     formState: { errors },
     reset,
   } = useForm({
     values: {
-      ...props,
-      tagIds: [],
+      ...bookmark,
+      tagIds: bookmark.tags.map((tag) => tag.id),
     },
     resolver: zodResolver(formSchema),
   });
@@ -50,7 +64,7 @@ export default function EditBookmarkModal(props: Props) {
       id="edit-bookmark-modal"
       className="modal"
       onClose={() => {
-        reset(props);
+        reset(bookmark);
       }}
     >
       <div className="modal-box">
@@ -98,6 +112,36 @@ export default function EditBookmarkModal(props: Props) {
               name="url"
               render={({ message }) => {
                 return <p className="label text-error">{message}</p>;
+              }}
+            />
+          </fieldset>
+          <fieldset className="fieldset">
+            <label htmlFor="select-tags" className="label">
+              Tags
+            </label>
+            <Controller
+              control={control}
+              name="tagIds"
+              render={({ field }) => {
+                return (
+                  <Select
+                    id="select-tags"
+                    options={options}
+                    isMulti
+                    value={
+                      field.value && field.value.length > 0
+                        ? options.filter((option) =>
+                            field.value.includes(option.value),
+                          )
+                        : []
+                    }
+                    onChange={(newValue) => {
+                      field.onChange(
+                        newValue ? newValue.map((v) => v.value) : [],
+                      );
+                    }}
+                  />
+                );
               }}
             />
           </fieldset>
