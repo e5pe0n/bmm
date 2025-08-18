@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-
 use axum::{body::Body, http::Request};
 use http_body_util::BodyExt;
 use serde_json::{Value, json};
@@ -49,7 +47,13 @@ async fn test_list_bookmarks(db: PgPool) {
     assert_eq!(body[2]["title"], "Yet Another Bookmark");
     assert_eq!(body[2]["url"], "https://yet-another-example.com");
     let tags = body[2]["tags"].as_array().unwrap();
-    assert_eq!(tags.len(), 0);
+    assert_eq!(tags.len(), 2);
+    assert_eq!(tags[0]["id"], 2);
+    assert_eq!(tags[0]["name"], "Rust");
+    assert_eq!(tags[0]["color"], "#00ff00");
+    assert_eq!(tags[1]["id"], 3);
+    assert_eq!(tags[1]["name"], "TypeScript");
+    assert_eq!(tags[1]["color"], "#ff0000");
 }
 
 #[sqlx::test(fixtures("tags"))]

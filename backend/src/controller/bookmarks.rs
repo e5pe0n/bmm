@@ -38,7 +38,7 @@ pub struct CreateBookmarkReq {
     title: String,
     #[garde(url)]
     url: String,
-    #[garde(length(max = 50), inner(range(min = 1, max = MAX_ID)))]
+    #[garde(length(min = 1, max = 50), inner(range(min = 1, max = MAX_ID)))]
     tag_ids: Vec<i32>,
 }
 
@@ -73,7 +73,7 @@ pub struct UpdateBookmarkReq {
     title: String,
     #[garde(url)]
     url: String,
-    #[garde(length(max = 50), inner(range(min = 1, max = MAX_ID)))]
+    #[garde(length(min = 1, max = 50), inner(range(min = 1, max = MAX_ID)))]
     tag_ids: Vec<i32>,
 }
 

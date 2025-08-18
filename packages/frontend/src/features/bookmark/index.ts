@@ -83,7 +83,7 @@ export async function deleteBookmarks(ids: Bookmark["id"][]): Promise<void> {
 export const addBookmarkSchema = z.object({
   title: z.string().min(1),
   url: z.url(),
-  tagIds: z.array(tagIdSchema),
+  tagIds: z.array(tagIdSchema).min(1),
 });
 
 type AddBookmark = z.infer<typeof addBookmarkSchema>;
@@ -111,7 +111,7 @@ export const editBookmarkSchema = z.object({
   id: bookmarkIdSchema,
   title: z.string().min(1),
   url: z.url(),
-  tagIds: z.array(tagIdSchema),
+  tagIds: z.array(tagIdSchema).min(1),
 });
 
 type EditBookmark = z.infer<typeof editBookmarkSchema>;

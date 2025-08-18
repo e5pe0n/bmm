@@ -1,8 +1,4 @@
-import {
-  useQuery,
-  useQueryClient,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQueries } from "@tanstack/react-query";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
@@ -20,21 +16,32 @@ type FormValues = {
 };
 
 export default function Bookmarks() {
-  const { data, error } = useSuspenseQuery({
-    queryKey: ["bookmarks"],
-    queryFn: fetchBookmarks,
+  const [
+    { data: bookmarks, error: bookmarksError },
+    { data: tags, error: tagsError },
+  ] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ["bookmarks"],
+        queryFn: fetchBookmarks,
+      },
+      {
+        queryKey: ["tags"],
+        queryFn: fetchTags,
+      },
+    ],
   });
 
-  if (error) {
-    throw new Error("Failed to fetch bookmarks", {
-      cause: error,
+  if (bookmarksError) {
+    throw new Error("failed to fetch bookmarks", {
+      cause: bookmarksError,
     });
   }
-
-  const query = useQuery({
-    queryKey: ["tags"],
-    queryFn: fetchTags,
-  });
+  if (tagsError) {
+    throw new Error("failed to fetch tags", {
+      cause: tagsError,
+    });
+  }
 
   const { handleSubmit, control, watch, reset } = useForm<FormValues>({
     defaultValues: {
@@ -63,7 +70,7 @@ export default function Bookmarks() {
   return (
     <>
       <div>
-        {data && (
+        {bookmarks && tags && (
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex justify-end">
               <div className="flex space-x-2">
@@ -93,7 +100,7 @@ export default function Bookmarks() {
               control={control}
               render={({ field: { onChange, value } }) => (
                 <BookmarkTable
-                  bookmarks={data.map((v) => {
+                  bookmarks={bookmarks.map((v) => {
                     return {
                       ...v,
                       onClickEdit: () => {
@@ -107,6 +114,7 @@ export default function Bookmarks() {
                       },
                     };
                   })}
+                  tags={tags}
                   values={value}
                   onChange={onChange}
                 />
@@ -115,9 +123,9 @@ export default function Bookmarks() {
           </form>
         )}
       </div>
-      {query.data && <AddBookmarkModal tags={query.data} />}
-      {query.data && editingBookmark && (
-        <EditBookmarkModal bookmark={editingBookmark} tags={query.data} />
+      {tags && <AddBookmarkModal tags={tags} />}
+      {tags && editingBookmark && (
+        <EditBookmarkModal bookmark={editingBookmark} tags={tags} />
       )}
     </>
   );

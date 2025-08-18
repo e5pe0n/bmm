@@ -23,6 +23,22 @@ async fn main() -> anyhow::Result<()> {
                 .context("failed to drop tables.")?;
             println!("tables dropped successfully.");
         }
+        Some("trunc") => {
+            println!("truncating tables...");
+            sqlx::raw_sql(
+                r#"
+                DO $$
+                DECLARE
+                    r RECORD;
+                BEGIN
+                    FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename NOT LIKE 'pg_%' AND tablename NOT LIKE 'sql_%') LOOP
+                        EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' RESTART IDENTITY CASCADE;';
+                    END LOOP;
+                END $$;
+            "#,
+            ).execute(&db).await.context("failed to truncate tables.")?;
+            println!("tables truncated successfully.");
+        }
         Some("seed") => {
             println!("Seeding database...");
             sqlx::query_file_unchecked!("../sqls/seed.sql")
