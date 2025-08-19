@@ -2,5 +2,5 @@ packages:
   - "packages/*"
 
 catalog:
-  "@typescript/native-preview": "7.0.0-dev.20250725.3"
+  "typescript": "5.9.2"
   "vite": "^7.1.3"

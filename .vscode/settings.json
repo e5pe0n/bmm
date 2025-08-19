@@ -1,5 +1,4 @@
 {
-  "typescript.experimental.useTsgo": false,
   "files.associations": {
     "*.css": "tailwindcss"
   },
