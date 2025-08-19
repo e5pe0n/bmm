@@ -1,17 +1,23 @@
 {
-  "name": "@bmm/chrome-extension",
+  "name": "chrome-extension",
+  "private": true,
   "version": "0.0.0",
-  "description": "",
   "type": "module",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "packageManager": "pnpm@10.13.1",
   "dependencies": {
-    "@typescript/native-preview": "catalog:"
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@typescript/native-preview": "catalog:",
+    "@vitejs/plugin-react": "^5.0.0",
+    "globals": "^16.3.0",
+    "vite": "catalog:"
   }
 }

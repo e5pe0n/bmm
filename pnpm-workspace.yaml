@@ -3,3 +3,4 @@ packages:
 
 catalog:
   "@typescript/native-preview": "7.0.0-dev.20250725.3"
+  "vite": "^7.1.3"
