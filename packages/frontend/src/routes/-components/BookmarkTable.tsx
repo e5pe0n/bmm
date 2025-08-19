@@ -1,6 +1,8 @@
+import { rankItem } from "@tanstack/match-sorter-utils";
 import {
   type ColumnDef,
   type ColumnFiltersState,
+  type FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -8,10 +10,23 @@ import {
 } from "@tanstack/react-table";
 import chroma from "chroma-js";
 import { useState } from "react";
-import { GoPencil } from "react-icons/go";
+import { GoPencil, GoSearch } from "react-icons/go";
 import Select from "react-select";
+import DebouncedInputString from "../../components/DebouncedInput";
 import type { Bookmark } from "../../features/bookmark";
 import type { Tag } from "../../features/tag";
+
+declare module "@tanstack/react-table" {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>;
+  }
+}
+
+const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
+  const itemRank = rankItem(row.getValue(columnId), value);
+  addMeta({ itemRank });
+  return itemRank.passed;
+};
 
 type Props = {
   bookmarks: BookmarkRow[];
@@ -44,6 +59,7 @@ export default function BookmarkTable({
     };
   });
 
+  const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
   const columns: ColumnDef<BookmarkRow>[] = [
@@ -66,6 +82,7 @@ export default function BookmarkTable({
           }}
         />
       ),
+      enableGlobalFilter: false,
     },
     {
       header: "title",
@@ -109,6 +126,7 @@ export default function BookmarkTable({
           })}
         </div>
       ),
+      enableGlobalFilter: false,
     },
     {
       id: "edit",
@@ -121,6 +139,7 @@ export default function BookmarkTable({
           <GoPencil />
         </button>
       ),
+      enableGlobalFilter: false,
     },
   ];
 
@@ -129,7 +148,12 @@ export default function BookmarkTable({
     columns,
     state: {
       columnFilters,
+      globalFilter,
     },
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    globalFilterFn: "fuzzy",
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -139,7 +163,18 @@ export default function BookmarkTable({
 
   return (
     <>
-      <div className="p-4">
+      <div className="p-4 space-y-2">
+        <label htmlFor="search-input" className="input w-full">
+          <GoSearch />
+          <DebouncedInputString
+            id="search-input"
+            type="search"
+            placeholder="Search..."
+            onChange={(value) => {
+              setGlobalFilter(value);
+            }}
+          />
+        </label>
         <Select
           className="w-full"
           placeholder="tags"
