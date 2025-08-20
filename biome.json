@@ -11,7 +11,8 @@
       "**",
       "!**/public/mockServiceWorker.js",
       "!backend/target/**",
-      "!packages/frontend/src/routeTree.gen.ts"
+      "!packages/frontend/src/routeTree.gen.ts",
+      "!**/dist/**"
     ]
   },
   "formatter": {

@@ -9,15 +9,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.11",
+    "@tailwindcss/vite": "^4.1.12",
+    "change-case": "^5.4.4",
+    "daisyui": "^5.0.50",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "tailwindcss": "^4.1.11"
+    "react-error-boundary": "^6.0.0",
+    "tailwindcss": "^4.1.12"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.16",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^5.0.1",
+    "chrome-types": "^0.1.371",
     "globals": "^16.3.0",
     "typescript": "catalog:",
     "vite": "catalog:"

@@ -2,11 +2,7 @@ use crate::controller::{
     bookmarks::{create_bookmark, delete_bookmarks, list_bookmarks, update_bookmark},
     tags::{create_tag, delete_tags, list_tags, update_tag},
 };
-use axum::{
-    Router,
-    http::{HeaderValue, Method},
-    routing::get,
-};
+use axum::{Router, http::Method, routing::get};
 use sqlx::PgPool;
 use std::sync::Arc;
 use tower_http::cors::CorsLayer;
@@ -26,6 +22,13 @@ pub fn app(db: PgPool) -> Router {
         tag_repository: Box::new(repository::tag::TagRepository::new(db.clone())),
     });
 
+    let origins = [
+        "http://localhost:5173".parse().unwrap(),
+        "chrome-extension://oeomdmldnhlpmecbceiflhiklhdpbelf"
+            .parse()
+            .unwrap(),
+    ];
+
     Router::new()
         .route(
             "/v1/bookmarks",
@@ -44,7 +47,7 @@ pub fn app(db: PgPool) -> Router {
         .with_state(shared_state)
         .layer(
             CorsLayer::new()
-                .allow_origin("http://localhost:5173".parse::<HeaderValue>().unwrap())
+                .allow_origin(origins)
                 .allow_methods([
                     Method::GET,
                     Method::DELETE,
