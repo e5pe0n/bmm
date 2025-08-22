@@ -15,6 +15,7 @@ import Select from "react-select";
 import DebouncedInputString from "../../components/DebouncedInput";
 import type { Bookmark } from "../../features/bookmark";
 import type { Tag } from "../../features/tag";
+import { getFaviconUrl } from "../../utils";
 
 declare module "@tanstack/react-table" {
   interface FilterFns {
@@ -28,13 +29,6 @@ const fuzzyFilter: FilterFn<unknown> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-type Props = {
-  bookmarks: BookmarkRow[];
-  tags: Tag[];
-  values: Bookmark["id"][];
-  onChange: (selectedIds: Bookmark["id"][]) => void;
-};
-
 type BookmarkRow = Bookmark & {
   onClickEdit?: (() => void) | (() => Promise<void>);
 };
@@ -43,6 +37,13 @@ type Option = {
   label: Tag["name"];
   value: Tag["id"];
   color: Tag["color"];
+};
+
+type Props = {
+  bookmarks: BookmarkRow[];
+  tags: Tag[];
+  values: Bookmark["id"][];
+  onChange: (selectedIds: Bookmark["id"][]) => void;
 };
 
 export default function BookmarkTable({
@@ -83,6 +84,17 @@ export default function BookmarkTable({
         />
       ),
       enableGlobalFilter: false,
+    },
+    {
+      id: "icon",
+      cell: (info) => {
+        return (
+          <img
+            src={getFaviconUrl(new URL(info.row.original.url))}
+            aria-label="favicon"
+          />
+        );
+      },
     },
     {
       header: "title",
