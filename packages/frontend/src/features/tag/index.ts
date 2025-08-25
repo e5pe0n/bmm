@@ -1,6 +1,7 @@
 import * as changeKeys from "change-case/keys";
 import { z } from "zod";
 import { config } from "../../config";
+import chroma from "chroma-js";
 
 export const tagIdSchema = z.number().brand<"TagId">();
 export const colorSchema = z
@@ -8,6 +9,11 @@ export const colorSchema = z
   .brand<"Color">()
   .regex(/^#[0-9a-f]{6}$/);
 export type Color = z.infer<typeof colorSchema>;
+export const Color = {
+  new: () => {
+    return chroma.random().hex() as Color;
+  },
+};
 
 export const tagSchema = z.object({
   id: tagIdSchema,
@@ -59,7 +65,7 @@ export const addTagSchema = z.object({
 
 type AddTag = z.infer<typeof addTagSchema>;
 
-export async function addTag(data: AddTag): Promise<void> {
+export async function addTag(data: AddTag): Promise<Tag> {
   const snakeCaseData = changeKeys.snakeCase(data, 4);
   const res = await fetch(`${config.apiEndpoint}/tags`, {
     method: "POST",
@@ -76,6 +82,20 @@ export async function addTag(data: AddTag): Promise<void> {
   if (!res.ok) {
     throw new Error(`failed to add tag: ${res.statusText}`);
   }
+
+  const json = await res.json();
+  const camelCaseJson = changeKeys.camelCase(json);
+  const valiRes = tagSchema.safeParse(camelCaseJson);
+  if (!valiRes.success) {
+    throw new Error(
+      `tag added successfully but invalid response received; ${z.prettifyError(valiRes.error)}`,
+      {
+        cause: valiRes.error,
+      },
+    );
+  }
+
+  return valiRes.data;
 }
 
 const deleteIdsSchema = z.array(z.coerce.number());

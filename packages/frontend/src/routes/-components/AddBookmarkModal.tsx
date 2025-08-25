@@ -2,10 +2,11 @@ import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
-import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import type z from "zod";
 import { addBookmark, addBookmarkSchema } from "../../features/bookmark";
-import type { Tag } from "../../features/tag";
+import { addTag, Color, type Tag } from "../../features/tag";
+import { useState } from "react";
 
 const formSchema = addBookmarkSchema;
 
@@ -22,13 +23,15 @@ type Props = {
 };
 
 export default function AddBookmarkModal({ tags }: Props) {
-  const options = tags.map((tag) => {
+  const defaultOptions = tags.map((tag) => {
     return {
       value: tag.id,
       label: tag.name,
       color: tag.color,
     };
   });
+  const [options, setOptions] = useState(defaultOptions);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     handleSubmit,
@@ -36,10 +39,34 @@ export default function AddBookmarkModal({ tags }: Props) {
     control,
     formState: { errors },
     reset,
+    getValues,
+    setValue,
   } = useForm({
     defaultValues,
     resolver: zodResolver(formSchema),
   });
+
+  const handleCreate = async (inputValue: string) => {
+    setIsLoading(true);
+    try {
+      const addedTag = await addTag({
+        name: inputValue,
+        color: Color.new(),
+      });
+      setOptions([
+        ...defaultOptions,
+        {
+          value: addedTag.id,
+          label: addedTag.name,
+          color: addedTag.color,
+        },
+      ]);
+      setValue("tagIds", [...getValues("tagIds"), addedTag.id]);
+    } catch (error) {
+      console.error("error occurred during adding a tag.", error);
+    }
+    setIsLoading(false);
+  };
 
   const queryClient = useQueryClient();
 
@@ -121,7 +148,9 @@ export default function AddBookmarkModal({ tags }: Props) {
               name="tagIds"
               render={({ field }) => {
                 return (
-                  <Select
+                  <CreatableSelect
+                    isClearable
+                    isLoading={isLoading}
                     id="select-tags"
                     options={options}
                     isMulti
@@ -137,6 +166,7 @@ export default function AddBookmarkModal({ tags }: Props) {
                         newValue ? newValue.map((v) => v.value) : [],
                       );
                     }}
+                    onCreateOption={handleCreate}
                   />
                 );
               }}
