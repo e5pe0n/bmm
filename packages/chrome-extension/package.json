@@ -10,12 +10,16 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
+    "@hookform/error-message": "^2.0.1",
+    "@hookform/resolvers": "^5.2.1",
     "change-case": "^5.4.4",
     "daisyui": "^5.0.50",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-error-boundary": "^6.0.0",
-    "tailwindcss": "^4.1.12"
+    "react-hook-form": "^7.62.0",
+    "tailwindcss": "^4.1.12",
+    "zod": "^4.0.16"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.16",
