@@ -1,7 +1,7 @@
 import * as changeKeys from "change-case/keys";
+import chroma from "chroma-js";
 import { z } from "zod";
 import { config } from "../../config";
-import chroma from "chroma-js";
 
 export const tagIdSchema = z.number().brand<"TagId">();
 export const colorSchema = z

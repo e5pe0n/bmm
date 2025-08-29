@@ -1,7 +1,7 @@
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { use } from "react";
 import AddBookmarkForm from "./AddBookmarkForm";
 import { fetchTags } from "./tag";
-import { useSuspenseQuery } from "@tanstack/react-query";
 
 export default function Popup() {
   const [tab] = use(
