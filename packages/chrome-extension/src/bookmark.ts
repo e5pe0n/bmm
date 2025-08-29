@@ -1,4 +1,5 @@
 import * as changeKeys from "change-case/keys";
+import { config } from "./config";
 
 type Bookmark = {
   title: string;
@@ -8,7 +9,7 @@ type Bookmark = {
 
 export async function saveBookmark(data: Bookmark) {
   const snakeCaseData = changeKeys.snakeCase(data, 4);
-  const res = await fetch("http://localhost:3000/v1/bookmarks", {
+  const res = await fetch(`${config.apiEndpoint}/bookmarks`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

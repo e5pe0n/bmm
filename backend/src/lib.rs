@@ -16,7 +16,7 @@ mod repository;
 // Re-export AppState for use in main.rs
 pub use app_state::AppState;
 
-pub fn app(db: PgPool) -> Router {
+pub fn app(db: PgPool, ext_id: &str) -> Router {
     let shared_state = Arc::new(AppState {
         bookmark_repository: Box::new(repository::bookmark::BookmarkRepository::new(db.clone())),
         tag_repository: Box::new(repository::tag::TagRepository::new(db.clone())),
@@ -24,7 +24,7 @@ pub fn app(db: PgPool) -> Router {
 
     let origins = [
         "http://localhost:5173".parse().unwrap(),
-        "chrome-extension://oeomdmldnhlpmecbceiflhiklhdpbelf"
+        ("chrome-extension://".to_string() + ext_id)
             .parse()
             .unwrap(),
     ];

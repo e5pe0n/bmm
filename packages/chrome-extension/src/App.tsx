@@ -4,7 +4,7 @@ import Popup from "./Popup";
 
 function App() {
   return (
-    <div className="p-3">
+    <div className="p-3 w-max">
       <h1 className="text-lg">bmm</h1>
       <ErrorBoundary fallback={<p>Something went wrong</p>}>
         <Suspense fallback={<p>loading...</p>}>

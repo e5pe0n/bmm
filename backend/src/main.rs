@@ -8,6 +8,7 @@ use std::env;
 async fn main() -> anyhow::Result<()> {
     dotenv().context("failed to load .env file.")?;
     let db_url = env::var("DATABASE_URL").context("DATABASE_URL not set.")?;
+    let ext_id = env::var("CHROME_EXT_ID").context("CHROME_EXT_ID not set.")?;
 
     let db = PgPoolOptions::new()
         .max_connections(20)
@@ -15,7 +16,7 @@ async fn main() -> anyhow::Result<()> {
         .await
         .context("failed to connect to the database.")?;
 
-    let app = app(db);
+    let app = app(db, &ext_id);
 
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
