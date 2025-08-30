@@ -7,7 +7,10 @@ version = "0.0.0"
 edition = "2024"
 
 [workspace.dependencies]
-axum = "0.8.4"
+axum = { version = "0.8.4", features = ["tracing"] }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+log = "0.4.27"
+tracing = "0.1.41"
 serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.12"
 tokio = { version = "1.46.1", features = ["full"] }
@@ -22,12 +25,15 @@ dotenvy = "0.15.7"
 time = { version = "0.3.41", features = ["macros", "serde-well-known"] }
 async-trait = "0.1.88"
 garde = { version = "0.22.0", features = ["full"] }
-tower-http = { version = "0.6.6", features = ["cors"] }
+tower-http = { version = "0.6.6", features = ["cors", "trace", "request-id"] }
 serde_json = { version = "1.0.141" }
 regex = "1.11.1"
 
 [dependencies]
 axum.workspace = true
+tracing-subscriber.workspace = true
+log.workspace = true
+tracing.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 tokio.workspace = true
