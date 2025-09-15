@@ -22,7 +22,7 @@ const styles: StylesConfig<Option, true> = {
     return {
       ...base,
       marginBottom: "2px",
-      borderLeft: `4px solid ${data.color}`,
+      borderLeft: `2px solid ${data.color}`,
       backgroundColor: isDisabled
         ? undefined
         : isSelected
@@ -45,7 +45,7 @@ const styles: StylesConfig<Option, true> = {
     const color = chroma(data.color);
     return {
       ...base,
-      borderLeft: `4px solid ${data.color}`,
+      borderLeft: `2px solid ${data.color}`,
       backgroundColor: color.alpha(0.1).css(),
     };
   },

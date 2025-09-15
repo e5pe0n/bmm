@@ -14,8 +14,9 @@ import { GoPencil, GoSearch } from "react-icons/go";
 import Select from "react-select";
 import DebouncedInputString from "../../components/DebouncedInput";
 import type { Bookmark } from "../../features/bookmark";
-import type { Tag } from "../../features/tag";
+import type { Tag as ITag } from "../../features/tag";
 import { getFaviconUrl } from "../../utils";
+import Tag from "../../components/Tag";
 
 declare module "@tanstack/react-table" {
   interface FilterFns {
@@ -34,14 +35,14 @@ type BookmarkRow = Bookmark & {
 };
 
 type Option = {
-  label: Tag["name"];
-  value: Tag["id"];
-  color: Tag["color"];
+  label: ITag["name"];
+  value: ITag["id"];
+  color: ITag["color"];
 };
 
 type Props = {
   bookmarks: BookmarkRow[];
-  tags: Tag[];
+  tags: ITag[];
   values: Bookmark["id"][];
   onChange: (selectedIds: Bookmark["id"][]) => void;
 };
@@ -120,18 +121,22 @@ export default function BookmarkTable({
         <div className="flex gap-2">
           {info.row.original.tags.map((tag) => {
             return (
-              <div
+              <Tag
                 key={`bookmark-${info.row.original.id}-tag-${tag.id}`}
-                className="badge"
-                style={{
-                  backgroundColor: tag.color,
-                  color:
-                    // https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Understanding_WCAG/Perceivable/Color_contrast
-                    chroma.contrast(tag.color, "white") > 3 ? "white" : "black",
-                }}
-              >
-                {tag.name}
-              </div>
+                tag={tag}
+              />
+              // <div
+              //   key={`bookmark-${info.row.original.id}-tag-${tag.id}`}
+              //   className="badge"
+              //   style={{
+              //     backgroundColor: tag.color,
+              //     color:
+              //       // https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Understanding_WCAG/Perceivable/Color_contrast
+              //       chroma.contrast(tag.color, "white") > 3 ? "white" : "black",
+              //   }}
+              // >
+              //   {tag.name}
+              // </div>
             );
           })}
         </div>
