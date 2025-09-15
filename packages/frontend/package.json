@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && rm -f dist/mockServiceWorker.js",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
@@ -34,6 +34,7 @@
     "zod": "^4.0.16"
   },
   "devDependencies": {
+    "@types/node": "^22.18.3",
     "@chromatic-com/storybook": "^4.1.1",
     "@storybook/addon-a11y": "^9.1.5",
     "@storybook/addon-docs": "^9.1.5",
@@ -45,15 +46,15 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "@vitest/browser": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4",
     "globals": "^16.3.0",
     "msw": "^2.10.4",
+    "playwright": "^1.55.0",
     "storybook": "^9.1.5",
     "typescript": "catalog:",
     "vite": "catalog:",
-    "vitest": "^3.2.4",
-    "@vitest/browser": "^3.2.4",
-    "playwright": "^1.55.0",
-    "@vitest/coverage-v8": "^3.2.4"
+    "vitest": "^3.2.4"
   },
   "msw": {
     "workerDirectory": [
