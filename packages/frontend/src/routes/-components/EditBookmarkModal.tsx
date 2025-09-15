@@ -2,7 +2,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { Controller, useForm } from "react-hook-form";
-import Select from "react-select";
+import TagCreatableSelect from "../../components/TagCreatableSelect";
 import type z from "zod";
 import {
   type Bookmark,
@@ -124,7 +124,7 @@ export default function EditBookmarkModal({ bookmark, tags }: Props) {
               name="tagIds"
               render={({ field }) => {
                 return (
-                  <Select
+                  <TagCreatableSelect
                     id="select-tags"
                     options={options}
                     isMulti

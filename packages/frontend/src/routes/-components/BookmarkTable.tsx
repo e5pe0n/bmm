@@ -127,9 +127,7 @@ export default function BookmarkTable({
                   backgroundColor: tag.color,
                   color:
                     // https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Understanding_WCAG/Perceivable/Color_contrast
-                    chroma.contrast(tag.color, "white") > 4.5
-                      ? "white"
-                      : "black",
+                    chroma.contrast(tag.color, "white") > 3 ? "white" : "black",
                 }}
               >
                 {tag.name}

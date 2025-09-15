@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import CreatableSelect from "react-select/creatable";
+import TagCreatableSelect from "../../components/TagCreatableSelect";
 import type z from "zod";
 import { addBookmark, addBookmarkSchema } from "../../features/bookmark";
 import { addTag, Color, type Tag } from "../../features/tag";
@@ -148,7 +148,7 @@ export default function AddBookmarkModal({ tags }: Props) {
               name="tagIds"
               render={({ field }) => {
                 return (
-                  <CreatableSelect
+                  <TagCreatableSelect
                     isClearable
                     isLoading={isLoading}
                     id="select-tags"
