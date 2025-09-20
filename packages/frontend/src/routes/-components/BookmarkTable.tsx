@@ -6,6 +6,8 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
+  type PaginationState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
@@ -16,6 +18,7 @@ import Tag from "../../components/Tag";
 import type { Bookmark } from "../../features/bookmark";
 import type { Tag as ITag } from "../../features/tag";
 import { getFaviconUrl } from "../../utils";
+import Pagination from "../../components/Pagination";
 
 declare module "@tanstack/react-table" {
   interface FilterFns {
@@ -124,18 +127,6 @@ export default function BookmarkTable({
                 key={`bookmark-${info.row.original.id}-tag-${tag.id}`}
                 tag={tag}
               />
-              // <div
-              //   key={`bookmark-${info.row.original.id}-tag-${tag.id}`}
-              //   className="badge"
-              //   style={{
-              //     backgroundColor: tag.color,
-              //     color:
-              //       // https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Understanding_WCAG/Perceivable/Color_contrast
-              //       chroma.contrast(tag.color, "white") > 3 ? "white" : "black",
-              //   }}
-              // >
-              //   {tag.name}
-              // </div>
             );
           })}
         </div>
@@ -157,20 +148,28 @@ export default function BookmarkTable({
     },
   ];
 
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
   const table = useReactTable({
     data: bookmarks,
     columns,
     state: {
       columnFilters,
       globalFilter,
+      pagination,
     },
     filterFns: {
       fuzzy: fuzzyFilter,
     },
     globalFilterFn: "fuzzy",
     onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const tagsColumn = table.getColumn("tags")!;
@@ -246,6 +245,11 @@ export default function BookmarkTable({
             })}
           </tbody>
         </table>
+        <Pagination
+          pageIndex={table.getState().pagination.pageIndex}
+          onClickPageIndex={table.setPageIndex}
+          lastPageIndex={Math.max(table.getPageCount() - 1, 0)}
+        />
       </div>
     </>
   );

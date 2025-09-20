@@ -5,7 +5,7 @@ import { tagIdSchema, tagSchema } from "../tag";
 
 const bookmarkIdSchema = z.number().brand<"BookmarkId">();
 
-const bookmarkSchema = z.object({
+export const bookmarkSchema = z.object({
   id: bookmarkIdSchema,
   title: z.string().min(1),
   url: z.url(),
