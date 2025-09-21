@@ -14,11 +14,11 @@ import { useState } from "react";
 import { GoPencil, GoSearch } from "react-icons/go";
 import Select from "react-select";
 import DebouncedInputString from "../../components/DebouncedInput";
+import Pagination from "../../components/Pagination";
 import Tag from "../../components/Tag";
 import type { Bookmark } from "../../features/bookmark";
 import type { Tag as ITag } from "../../features/tag";
 import { getFaviconUrl } from "../../utils";
-import Pagination from "../../components/Pagination";
 
 declare module "@tanstack/react-table" {
   interface FilterFns {

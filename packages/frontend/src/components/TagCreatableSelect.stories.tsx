@@ -42,7 +42,7 @@ const options: TagCreatableSelectProps["options"] = [
 export const Default: Story = {
   args: {
     options,
-    // @ts-ignore
+    // @ts-expect-error
     defaultValue: [options[0], options[1]],
   },
 };

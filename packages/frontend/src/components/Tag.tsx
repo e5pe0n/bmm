@@ -1,6 +1,6 @@
+import chroma from "chroma-js";
 import type { ComponentProps } from "react";
 import type { Tag as ITag } from "../features/tag";
-import chroma from "chroma-js";
 
 export type TagProps = ComponentProps<"div"> & {
   tag: ITag;

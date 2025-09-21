@@ -1,8 +1,8 @@
-import CreatableSelect from "react-select/creatable";
-import type { CreatableProps } from "react-select/creatable";
-import type { Tag } from "../features/tag";
-import type { GroupBase, StylesConfig } from "react-select";
 import chroma from "chroma-js";
+import type { GroupBase, StylesConfig } from "react-select";
+import type { CreatableProps } from "react-select/creatable";
+import CreatableSelect from "react-select/creatable";
+import type { Tag } from "../features/tag";
 
 type Option = {
   value: Tag["id"];
@@ -18,9 +18,9 @@ export type TagCreatableSelectProps = CreatableProps<
 
 const styles: StylesConfig<Option, true> = {
   option: (base, { data, isDisabled, isFocused, isSelected }) => {
-    // @ts-ignore
+    // @ts-expect-error
     if (data.__isNew__) {
-      return base
+      return base;
     }
 
     const color = chroma(data.color);

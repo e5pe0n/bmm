@@ -1,9 +1,8 @@
+import { range } from "@e5pe0n/ts-lib";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { fn } from "storybook/test";
-
-import BookmarkTable from "./BookmarkTable";
 import { bookmarkSchema } from "../../features/bookmark";
-import { range } from "@e5pe0n/ts-lib";
+import BookmarkTable from "./BookmarkTable";
 
 const meta = {
   title: "routes/-components/BookmarkTable",

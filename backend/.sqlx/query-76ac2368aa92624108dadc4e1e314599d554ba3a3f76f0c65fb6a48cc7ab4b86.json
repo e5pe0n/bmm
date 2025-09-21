@@ -30,19 +30,9 @@
       }
     ],
     "parameters": {
-      "Left": [
-        "Varchar",
-        "Varchar",
-        "Int4"
-      ]
+      "Left": ["Varchar", "Varchar", "Int4"]
     },
-    "nullable": [
-      false,
-      false,
-      false,
-      false,
-      false
-    ]
+    "nullable": [false, false, false, false, false]
   },
   "hash": "76ac2368aa92624108dadc4e1e314599d554ba3a3f76f0c65fb6a48cc7ab4b86"
 }
