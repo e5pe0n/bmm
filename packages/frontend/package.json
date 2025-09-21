@@ -8,12 +8,13 @@
     "build": "tsc -b && vite build && rm -f dist/mockServiceWorker.js",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
     "@e5pe0n/ts-lib": "^0.0.3",
     "@hookform/error-message": "^2.0.1",
-    "@hookform/resolvers": "^5.2.2",
+    "@hookform/resolvers": "5.2.2",
     "@tailwindcss/vite": "^4.1.13",
     "@tanstack/match-sorter-utils": "^8.19.4",
     "@tanstack/react-query": "^5.89.0",
@@ -26,12 +27,12 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-error-boundary": "^6.0.0",
-    "react-hook-form": "^7.63.0",
+    "react-hook-form": "7.63.0",
     "react-icons": "^5.5.0",
     "react-select": "^5.10.2",
     "react-use": "^17.6.0",
     "tailwindcss": "^4.1.13",
-    "zod": "^4.1.9"
+    "zod": "4.1.9"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^4.1.1",

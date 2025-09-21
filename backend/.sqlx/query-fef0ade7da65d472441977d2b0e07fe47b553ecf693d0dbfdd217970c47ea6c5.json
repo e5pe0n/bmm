@@ -1,0 +1,74 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            select\n                bs.id as bs_id, title, url, bs.created_at as bs_created_at, bs.updated_at as bs_updated_at,\n                tags.id as \"tags_id?\", name as \"name?\", color as \"color?\",\n                tags.created_at as \"tags_created_at?\", tags.updated_at as \"tags_updated_at?\"\n            from bookmarks bs\n            left join bookmark_tags bts on bs.id = bts.bookmark_id\n            left join tags on bts.tag_id = tags.id\n            order by bs.id, tags.id\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "bs_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "title",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "bs_created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 4,
+        "name": "bs_updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 5,
+        "name": "tags_id?",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "name?",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "color?",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "tags_created_at?",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 9,
+        "name": "tags_updated_at?",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "fef0ade7da65d472441977d2b0e07fe47b553ecf693d0dbfdd217970c47ea6c5"
+}

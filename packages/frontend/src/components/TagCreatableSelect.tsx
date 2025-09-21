@@ -18,6 +18,11 @@ export type TagCreatableSelectProps = CreatableProps<
 
 const styles: StylesConfig<Option, true> = {
   option: (base, { data, isDisabled, isFocused, isSelected }) => {
+    // @ts-ignore
+    if (data.__isNew__) {
+      return base
+    }
+
     const color = chroma(data.color);
     return {
       ...base,

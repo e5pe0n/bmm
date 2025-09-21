@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && ENVIRONMENT=PRODUCTION vite build",
+    "build:dev": "tsc -b && ENVIRONMENT=DEVELOPMENT vite build && mv dist-dev/manifest.dev.json dist-dev/manifest.json",
     "build:watch": "tsc -b && vite build -w",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "rm -rf dist node_modules"
   },
   "dependencies": {
     "@hookform/error-message": "^2.0.1",

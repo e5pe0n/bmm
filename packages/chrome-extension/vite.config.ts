@@ -5,4 +5,7 @@ import { defineConfig } from "vite";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  build: {
+    outDir: process.env.ENVIRONMENT === "PRODUCTION" ? "dist" : "dist-dev"
+  }
 });

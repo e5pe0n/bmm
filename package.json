@@ -7,20 +7,27 @@
     "lint": "biome check",
     "lint:fix": "biome check --fix",
     "fmt": "cd backend && cargo fmt",
-    "dev:be": "cd backend && cargo watch -x run",
+    "dev:be": "cd backend && ENVIRONMENT=DEVELOPMENT cargo watch -x run",
     "dev:fe": "cd packages/frontend && pnpm dev",
     "test:be": "cd backend && cargo test",
     "test": "pnpm test:be",
     "db:migrate": "cd backend && cargo sqlx migrate run",
     "db:seed": "cd backend && cargo xtask seed",
-    "db:reset": "cd backend && cargo xtask reset"
+    "db:reset": "cd backend && cargo xtask reset",
+    "dc:up:prod": "docker compose -f compose.prod.yml --env-file .env.production up",
+    "dc:build:prod": "docker compose -f compose.prod.yml --env-file .env.production build",
+    "dc:down:prod": "docker compose -f compose.prod.yml --env-file .env.production down",
+    "dc:exec:prod": "docker compose -f compose.prod.yml --env-file .env.production exec",
+    "dc:ps:prod": "docker compose -f compose.prod.yml --env-file .env.production ps",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "build": "pnpm -r build"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "devDependencies": {
-    "@biomejs/biome": "^2.1.2",
+    "@biomejs/biome": "^2.2.4",
     "dotenv-cli": "^9.0.0",
     "typescript": "catalog:"
   }

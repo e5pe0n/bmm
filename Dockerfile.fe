@@ -8,7 +8,7 @@ ARG VITE_API_ENDPOINT
 FROM base AS build
 COPY . /usr/src/app
 WORKDIR /usr/src/app
-ENV VITE_API_ENDPOINT=ARG
+ENV VITE_API_ENDPOINT=${VITE_API_ENDPOINT}
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run -r build
 RUN pnpm deploy --legacy --filter=frontend --prod /prod/frontend
@@ -18,4 +18,4 @@ COPY --from=build /prod/frontend /prod/frontend
 WORKDIR /prod/frontend
 EXPOSE 5173
 RUN npm i -g serve@14
-CMD [ "serve" ]
+CMD [ "serve", "dist/" ]

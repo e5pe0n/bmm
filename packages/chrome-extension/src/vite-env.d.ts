@@ -9,6 +9,7 @@ interface ViteTypeOptions {
 interface ImportMetaEnv {
   readonly VITE_API_ENDPOINT: string;
   readonly VITE_MSW_ENABLED: string;
+  readonly VITE_ENVIRONMENT: string;
 }
 
 interface ImportMeta {
